@@ -1,0 +1,17 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# No client data ever
+*.csv
+*.xlsx
+*.json
+reports/
+audits/
