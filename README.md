@@ -147,7 +147,7 @@ Uso e interpretación de Semrush como herramienta complementaria en el stack de 
 - **Organic Research** — distribución de posiciones (top 3 / 4-10 / 11-100), top páginas, tendencia histórica, branded vs non-branded. Precisión: ±40%, usar como tendencia
 - **Keyword Gap** — Missing (mayor oportunidad), Weak (mejorar posición), Untapped (validar demanda). Intents: Informational, Navigational, Commercial, Transactional
 - **Backlink Gap** — dominios que enlazan a competidores pero no al cliente. Filtrar por Authority Score >30
-- **Site Audit** — crawler básico. En el flujo de PubliUp, Screaming Frog es el principal. Semrush Site Audit como check secundario
+- **Site Audit** — crawler básico. En el flujo de auditor�a, Screaming Frog es el crawler principal. Semrush Site Audit como check secundario
 - **Traffic Analytics** — estimación de tráfico total (no solo orgánico). Útil para comparativa de canales con competidores. No usar como cifra real
 - **Authority Score** — métrica propia, no PageRank. Tabla de rangos. Usar como referencia comparativa, no como objetivo
 - **SE Ranking vs Semrush** — SE Ranking para seguimiento preciso de keywords definidas, Semrush para discovery del dominio completo. Flujo: Semrush descubre → SE Ranking rastrea

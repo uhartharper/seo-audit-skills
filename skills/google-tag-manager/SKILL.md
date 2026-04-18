@@ -227,7 +227,7 @@ Si el evento aparece en DebugView pero no en informes → problema de definició
 
 ---
 
-## Casos frecuentes en clientes PubliUp
+## Casos frecuentes en clientes
 
 ### Container GTM instalado pero sin datos en GA4
 

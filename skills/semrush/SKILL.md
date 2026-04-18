@@ -10,7 +10,7 @@ user-invokable: false
 
 # Semrush — Knowledge Base
 
-## Rol en el flujo de auditoría PubliUp
+## Rol en el flujo de auditoría
 
 Semrush complementa SE Ranking y Screaming Frog con:
 - Visión del dominio completo (no solo keywords rastreadas manualmente)
@@ -101,7 +101,7 @@ Compara el perfil de backlinks del cliente vs competidores para identificar domi
 
 ### Posición en el flujo
 
-Semrush Site Audit es un crawler básico. En el flujo de auditoría de PubliUp:
+Semrush Site Audit es un crawler básico. En el flujo de auditoría:
 - SF es el crawler principal (más datos, más configuración)
 - Semrush Site Audit es un check secundario o para clientes sin licencia de SF
 

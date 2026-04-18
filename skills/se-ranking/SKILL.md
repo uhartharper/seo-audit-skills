@@ -10,7 +10,7 @@ user-invokable: false
 
 # SE Ranking — Knowledge Base
 
-## Rol en el flujo de auditoría PubliUp
+## Rol en el flujo de auditoría
 
 SE Ranking es la fuente principal de:
 - Posiciones actuales e históricas por keyword

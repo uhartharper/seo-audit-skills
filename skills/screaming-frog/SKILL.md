@@ -10,7 +10,7 @@ user-invokable: false
 
 # Screaming Frog SEO Spider — Knowledge Base
 
-## Rol en el flujo de auditoría PubliUp
+## Rol en el flujo de auditoría
 
 Screaming Frog es la fuente principal de:
 - Inventario completo de URLs del sitio
@@ -215,7 +215,7 @@ SF permite filtrar cualquier columna. Para encontrar patterns:
 
 ---
 
-## Falsos positivos frecuentes en clientes PubliUp
+## Falsos positivos frecuentes en clientes
 
 | Issue reportado por SF | Por qué puede ser falso | Cómo validar |
 |---|---|---|
