@@ -3,8 +3,14 @@
 Custom knowledge base for technical SEO audits. Each skill is a Markdown file
 that Claude Code loads automatically when the relevant topic is invoked.
 
-Built from real audit patterns across WordPress, PrestaShop, and analytics
-stacks. All knowledge is anonymized and RGPD compliant — no client data.
+Built from real audit patterns across:
+- **CMS**: WordPress (Divi, Elementor), PrestaShop
+- **Analytics & tracking**: GA4, Google Tag Manager
+- **SEO tools**: Screaming Frog, SE Ranking, Semrush
+- **Technical**: robots.txt, Core Web Vitals, schema, crawl budget
+
+All knowledge is anonymized and RGPD compliant — no client data, no domains,
+no identifying information. The pattern matters, not the source.
 
 ---
 
