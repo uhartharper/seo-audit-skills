@@ -9,7 +9,7 @@ Built from real audit patterns across:
 - **SEO tools**: Screaming Frog, SE Ranking, Semrush
 - **Technical**: robots.txt, Core Web Vitals, schema, crawl budget
 
-All knowledge is anonymized and RGPD compliant — no client data, no domains,
+All knowledge is anonymized and GDPR compliant — no client data, no domains,
 no identifying information. The pattern matters, not the source.
 
 ---
@@ -22,14 +22,14 @@ no identifying information. The pattern matters, not the source.
 
 Covers WordPress sites built with Divi Theme (Elegant Themes) 4.27.x.
 
-- **H1 ausente** — Divi no genera H1 automáticamente. Fix: módulo > Diseño > Etiqueta de encabezado
-- **CSS inline masivo** — Dynamic CSS de Divi inyecta cientos de KB por página. Fix: Critical CSS + Improved Asset Loading
-- **JS render-blocking** — 10-20 scripts sin `async`/`defer`. Snippets PHP con hook `script_loader_tag` (WP 4.1+) para diferir por handle, con exclusión de jQuery
-- **Hero como CSS background-image** — invisible para el preload scanner. Fix: `<link rel="preload">` o convertir a `<img>` real
-- **Seguridad** — `<meta generator>`, `X-Powered-By`, REST API abierto, user enumeration, pingback. Snippets PHP con hooks `wp_robots` (WP 5.7+) y `rest_authentication_errors` (WP 4.4+)
-- **Robots.txt virtual** — WordPress genera robots.txt sin archivo físico. Hook `robots_txt` (WP 3.0+) para añadir reglas de AI crawlers
-- **Carga condicional** — Ninja Forms, Dashicons y plugins GDPR cargan en todas las páginas. Fix: `wp_enqueue_scripts` con prioridad 100+
-- Checklist de auditoría por criticidad + positivos habituales + rutas de configuración Divi/Yoast
+- **Missing H1** — Divi does not generate H1 automatically. Fix: module > Design > Heading Tag
+- **Massive inline CSS** — Divi Dynamic CSS injects hundreds of KB per page. Fix: Critical CSS + Improved Asset Loading
+- **Render-blocking JS** — 10-20 scripts without `async`/`defer`. PHP snippets with `script_loader_tag` hook (WP 4.1+) to defer by handle, with jQuery exclusion
+- **Hero as CSS background-image** — invisible to the preload scanner. Fix: `<link rel="preload">` or convert to real `<img>`
+- **Security** — `<meta generator>`, `X-Powered-By`, open REST API, user enumeration, pingback. PHP snippets with `wp_robots` (WP 5.7+) and `rest_authentication_errors` (WP 4.4+) hooks
+- **Virtual robots.txt** — WordPress generates robots.txt without a physical file. `robots_txt` hook (WP 3.0+) to add AI crawler rules
+- **Conditional loading** — Ninja Forms, Dashicons and GDPR plugins load on all pages. Fix: `wp_enqueue_scripts` with priority 100+
+- Audit checklist by criticality + common positives + Divi/Yoast configuration paths
 
 ---
 
@@ -37,21 +37,21 @@ Covers WordPress sites built with Divi Theme (Elegant Themes) 4.27.x.
 
 **File:** `skills/wordpress-elementor/SKILL.md`
 
-Covers WordPress sites built with Elementor (free y Pro), incluyendo stacks con WP Rocket y WooCommerce.
+Covers WordPress sites built with Elementor (free and Pro), including stacks with WP Rocket and WooCommerce.
 
-- **LCP hero lazy-loaded** — Elementor y WP Rocket reemplazan `src` con SVG placeholder. `fetchpriority="high"` queda inútil aunque esté presente. Fix: `e-no-lazyload`, excluir en WP Rocket > Media > LazyLoad
-- **fetchpriority en elemento incorrecto** — asignado a imágenes decorativas (separadores, dividers) en lugar de la imagen LCP real
-- **CSS/JS excesivos** — 40-90+ recursos. Fix: Improved Asset Loading (Elementor > Settings > Performance)
-- **HTML payload masivo** — WP Rocket inyecta `RocketLazyLoadScripts` y `elementorFrontendConfig` inline. Observado hasta 1.4 MB
-- **Elementor lazy load en backgrounds** — `.e-con.e-parent:nth-of-type(n+4)` oculta backgrounds de secciones 4+ hasta que JS las marca. Causa CLS
-- **Security headers ausentes** — patrón consistente. Snippets para Nginx y Apache
-- **Exposición de versiones** — Elementor en meta generator. PHP snippet para eliminarlo
-- **REST Link header** — expone IDs internos de WordPress. Fix: `remove_action('template_redirect', 'rest_output_link_header', 11)`
-- **DOM size** — Section/Column (4 divs) vs Containers Flexbox (2 divs). Fix: Elementor > Tools > Converter
-- **WooCommerce** — BreadcrumbList duplicado (Yoast + Schema Pro), FAQPage sin rich results en e-commerce desde 2023, Product schema ausente, `/mi-cuenta/` en sitemap
-- **PHP EOL** — 7.4 EOL desde nov 2022. Fix: actualizar en hPanel/cPanel/Plesk
-- **Canibalización en páginas de localización** — Elementor facilita duplicar templates por ciudad
-- Checklist de auditoría por criticidad + positivos habituales + rutas de configuración
+- **Lazy-loaded LCP hero** — Elementor and WP Rocket replace `src` with SVG placeholder. `fetchpriority="high"` becomes useless even when present. Fix: `e-no-lazyload`, exclude in WP Rocket > Media > LazyLoad
+- **fetchpriority on wrong element** — assigned to decorative images (separators, dividers) instead of the real LCP image
+- **Excessive CSS/JS** — 40-90+ resources. Fix: Improved Asset Loading (Elementor > Settings > Performance)
+- **Massive HTML payload** — WP Rocket injects `RocketLazyLoadScripts` and `elementorFrontendConfig` inline. Observed up to 1.4 MB
+- **Elementor lazy load on backgrounds** — `.e-con.e-parent:nth-of-type(n+4)` hides backgrounds of sections 4+ until JS marks them. Causes CLS
+- **Missing security headers** — consistent pattern. Snippets for Nginx and Apache
+- **Version exposure** — Elementor in meta generator. PHP snippet to remove it
+- **REST Link header** — exposes internal WordPress IDs. Fix: `remove_action('template_redirect', 'rest_output_link_header', 11)`
+- **DOM size** — Section/Column (4 divs) vs Flexbox Containers (2 divs). Fix: Elementor > Tools > Converter
+- **WooCommerce** — duplicate BreadcrumbList (Yoast + Schema Pro), FAQPage without rich results in e-commerce since 2023, missing Product schema, `/my-account/` in sitemap
+- **PHP EOL** — 7.4 EOL since Nov 2022. Fix: update in hPanel/cPanel/Plesk
+- **Keyword cannibalization on location pages** — Elementor makes it easy to duplicate templates by city
+- Audit checklist by criticality + common positives + configuration paths
 
 ---
 
@@ -59,19 +59,19 @@ Covers WordPress sites built with Elementor (free y Pro), incluyendo stacks con 
 
 **File:** `skills/prestashop-seo/SKILL.md`
 
-Covers PrestaShop 1.7.x / 8.x, incluyendo stacks con CreativeElements y Nginx/Plesk.
+Covers PrestaShop 1.7.x / 8.x, including stacks with CreativeElements and Nginx/Plesk.
 
-- **sitemap.xml 404** — PrestaShop genera el sitemap en `/1_index_sitemap.xml`. La ruta estándar no existe por defecto. Fix: redirect 301 en Nginx o .htaccess
-- **Cache-Control: no-store** — desactivado por defecto en todas las páginas HTML. Fix: CCC en Advanced Parameters > Performance (Smart cache CSS/JS, Minify HTML, Move JS to end)
-- **URLs con ID numérico** — `/217-slug` es estándar de PrestaShop. No es un error si el canonical apunta a la URL con ID. Migración requiere plan de redirects
-- **Controllers en sitemap** — CreativeElements y módulos de sitemap incluyen endpoints AJAX internos. Fix: excluir desde el módulo o bloquear en robots.txt
-- **PHPSESSID con expiración de décadas** — RGPD/ePrivacy. Fix: `session.cookie_lifetime = 0` en php.ini
-- **OG tags ausentes** — PrestaShop no los genera por defecto. Snippets Smarty para head.tpl
-- **Hero como background-image** — sliders nativos y CreativeElements. Fix: hook `displayHeader` para inyectar preload
-- **Seguridad** — headers Nginx, CSP en report-only mode, `expose_php = Off`
-- **Schema Product + Offer** — generado nativamente en PS8 si está habilitado. AggregateRating requiere módulo de valoraciones
-- **IndexNow** — implementación via hook `actionObjectProductUpdateAfter`
-- Tabla de rutas del backoffice + checklist por criticidad + positivos habituales
+- **sitemap.xml 404** — PrestaShop generates the sitemap at `/1_index_sitemap.xml`. The standard path does not exist by default. Fix: 301 redirect in Nginx or .htaccess
+- **Cache-Control: no-store** — disabled by default on all HTML pages. Fix: CCC in Advanced Parameters > Performance (Smart cache CSS/JS, Minify HTML, Move JS to end)
+- **URLs with numeric ID** — `/217-slug` is PrestaShop standard. Not an error if the canonical points to the URL with ID. Migration requires a redirect plan
+- **Controllers in sitemap** — CreativeElements and sitemap modules include internal AJAX endpoints. Fix: exclude from the module or block in robots.txt
+- **PHPSESSID with decade-long expiry** — GDPR/ePrivacy. Fix: `session.cookie_lifetime = 0` in php.ini
+- **Missing OG tags** — PrestaShop does not generate them by default. Smarty snippets for head.tpl
+- **Hero as background-image** — native sliders and CreativeElements. Fix: `displayHeader` hook to inject preload
+- **Security** — Nginx headers, CSP in report-only mode, `expose_php = Off`
+- **Schema Product + Offer** — generated natively in PS8 if enabled. AggregateRating requires a reviews module
+- **IndexNow** — implementation via `actionObjectProductUpdateAfter` hook
+- Backoffice route table + checklist by criticality + common positives
 
 ---
 
@@ -79,16 +79,16 @@ Covers PrestaShop 1.7.x / 8.x, incluyendo stacks con CreativeElements y Nginx/Pl
 
 **File:** `skills/google-tag-manager/SKILL.md`
 
-Debugging y configuración de GTM, con foco en el caso "evento que no llega a GA4".
+GTM debugging and configuration, focused on the "event not reaching GA4" scenario.
 
-- **Árbol de diagnóstico** — 7 pasos ordenados: tag pausado → trigger restrictivo → Preview Mode → Consent Mode → firing order → Measurement ID → DebugView
-- **Preview vs Producción** — Preview bypasa ad blockers y Consent Mode. Testear siempre en incógnito. `?gtm_debug=x` para debug en entorno real
-- **dataLayer** — estructura, naming rules, eventos reservados de GA4, cómo leer el dataLayer en consola y en la pestaña Preview
-- **Consent Mode v2** — obligatorio EEE desde marzo 2024. `analytics_storage: denied` bloquea GA4 tags. Diferencia Basic vs Advanced Consent Mode. Snippets de default + update
-- **Firing order** — GA4 Configuration Tag debe disparar en "Initialization - All Pages" antes que los Event Tags. Tag Sequencing para garantizarlo. Jerarquía completa de triggers
-- **DebugView** — cómo activarlo vía GTM, Chrome Extension o URL param
-- **Casos frecuentes** — formularios AJAX vs submit tradicional, Contact Form 7 (`wpcf7mailsent`), Elementor Forms, clicks en `tel:` y `mailto:`
-- Verificación de instalación del container vía consola y Network tab
+- **Diagnostic tree** — 7 ordered steps: paused tag → restrictive trigger → Preview Mode → Consent Mode → firing order → Measurement ID → DebugView
+- **Preview vs Production** — Preview bypasses ad blockers and Consent Mode. Always test in incognito. `?gtm_debug=x` for debugging in the real environment
+- **dataLayer** — structure, naming rules, GA4 reserved events, how to read the dataLayer in console and in the Preview tab
+- **Consent Mode v2** — mandatory in EEA since March 2024. `analytics_storage: denied` blocks GA4 tags. Difference between Basic and Advanced Consent Mode. Default + update snippets
+- **Firing order** — GA4 Configuration Tag must fire on "Initialization - All Pages" before Event Tags. Tag Sequencing to guarantee it. Full trigger hierarchy
+- **DebugView** — how to activate via GTM, Chrome Extension or URL param
+- **Common cases** — AJAX forms vs traditional submit, Contact Form 7 (`wpcf7mailsent`), Elementor Forms, clicks on `tel:` and `mailto:`
+- Container installation verification via console and Network tab
 
 ---
 
@@ -96,117 +96,117 @@ Debugging y configuración de GTM, con foco en el caso "evento que no llega a GA
 
 **File:** `skills/ga4-analysis/SKILL.md`
 
-Análisis de datos GA4 para auditorías SEO, con foco en adquisición orgánica vs pagada.
+GA4 data analysis for SEO audits, focused on organic vs paid acquisition.
 
-- **Diferencias UA → GA4** — sesiones vs eventos, bounce rate vs engagement rate, goals vs conversions, sampling vs BigQuery
-- **Orgánico vs pagado** — channel groups, cómo aislar Organic Search, por qué UTMs mal configurados inflan el orgánico
-- **Modelos de atribución** — Data-driven (default), Last click, First click, Linear, Time decay. Lookback windows. Por qué GA4 y Google Ads muestran cifras distintas
-- **Engagement** — definición de engaged session (≥10s o ≥2 páginas o conversión), diferencia con bounce rate de UA
-- **Integración GSC** — Reports > Acquisition > Search Console. Limitación: solo sesiones donde GA4 registró la visita
-- **Integración Google Ads** — remarketing audiences, importación de conversiones, análisis orgánico vs pagado side-by-side
-- **DebugView** — activación, latencia, validación de parámetros
-- **Informes útiles para SEO** — organic landing pages, organic queries, páginas con alta tasa de rebote orgánico
-- **Errores comunes** — tráfico de pago en Organic, self-referral, sesiones infladas, conversiones duplicadas, tráfico directo excesivo
-- Exportación a BigQuery, dimensiones y métricas clave
+- **UA to GA4 differences** — sessions vs events, bounce rate vs engagement rate, goals vs conversions, sampling vs BigQuery
+- **Organic vs paid** — channel groups, how to isolate Organic Search, why misconfigured UTMs inflate organic
+- **Attribution models** — Data-driven (default), Last click, First click, Linear, Time decay. Lookback windows. Why GA4 and Google Ads show different numbers
+- **Engagement** — definition of engaged session (>=10s or >=2 pages or conversion), difference from UA bounce rate
+- **GSC integration** — Reports > Acquisition > Search Console. Limitation: only sessions where GA4 recorded the visit
+- **Google Ads integration** — remarketing audiences, conversion import, organic vs paid side-by-side analysis
+- **DebugView** — activation, latency, parameter validation
+- **Useful SEO reports** — organic landing pages, organic queries, pages with high organic bounce rate
+- **Common errors** — paid traffic in Organic, self-referral, inflated sessions, duplicate conversions, excessive direct traffic
+- BigQuery export, key dimensions and metrics
 
 ---
 
-### Herramienta — SE Ranking
+### Tool — SE Ranking
 
 **File:** `skills/se-ranking/SKILL.md`
 
-Interpretación de datos de SE Ranking en el contexto de auditorías SEO.
+SE Ranking data interpretation in the context of SEO audits.
 
-- **Rank tracking** — volatilidad normal (±3) vs caída real (>5 posiciones sostenida 7+ días) vs caída brusca (posible update). Árbol de diagnóstico antes de actuar
-- **SERP Features** — posición 4 con Featured Snippet puede superar a posición 1 sin feature en CTR real
-- **Site Audit** — es un crawler estático (sin JS rendering). Issues = señales, no conclusiones. Tabla de priorización: alta/media/baja prioridad según impacto real
-- **Falsos positivos documentados** — H1 missing en Divi/Elementor, duplicate content por paginación, broken links en JS, meta description dinámica
-- **Estimación de tráfico** — margen de error ±40-60%. Usar como tendencia, no como cifra absoluta. Comparativa con GA4 y GSC
-- **Keyword research** — flujo recomendado desde seed keywords hasta asignación por intent. Diferencias de volumen entre SE Ranking, Semrush y Google Ads
-- **Competitor analysis** — Share of Voice, Keyword Gap, cuándo usar Semrush para discovery y SE Ranking para seguimiento preciso
-- Integración con GSC, Screaming Frog y Semrush
+- **Rank tracking** — normal volatility (+-3) vs real drop (>5 positions sustained 7+ days) vs sudden drop (possible update). Diagnostic tree before acting
+- **SERP Features** — position 4 with Featured Snippet can outperform position 1 without feature in real CTR
+- **Site Audit** — static crawler (no JS rendering). Issues = signals, not conclusions. Prioritization table: high/medium/low priority by real impact
+- **Documented false positives** — H1 missing in Divi/Elementor, duplicate content from pagination, broken links in JS, dynamic meta description
+- **Traffic estimation** — error margin +-40-60%. Use as trend, not absolute figure. Comparison with GA4 and GSC
+- **Keyword research** — recommended flow from seed keywords to intent assignment. Volume differences between SE Ranking, Semrush and Google Ads
+- **Competitor analysis** — Share of Voice, Keyword Gap, when to use Semrush for discovery and SE Ranking for precise tracking
+- Integration with GSC, Screaming Frog and Semrush
 
 ---
 
-### Herramienta — Screaming Frog
+### Tool — Screaming Frog
 
 **File:** `skills/screaming-frog/SKILL.md`
 
-Uso técnico de Screaming Frog SEO Spider en auditorías.
+Technical use of Screaming Frog SEO Spider in audits.
 
-- **Spider vs JS Rendering** — Spider: rápido, no ejecuta JS. JS Rendering: usa Chromium, 5-10x más lento, obligatorio en Divi/Elementor. Crawl selectivo por lista de URLs para sitios grandes
-- **Configuración por CMS** — WordPress (exclusiones wp-admin, feeds, búsquedas; timeout JS 10s) y PrestaShop (parámetros de sesión/moneda/idioma a excluir; header Accept-Language)
-- **Reports clave** — Response Codes (redirects 302→301, 404 enlazados, 500), Page Titles (missing, duplicate, longitud), Meta Description, H1 (missing, multiple), Canonicals (apuntando a 404, sin canonical), Directives (noindex no intencional), Images (alt text, peso)
-- **Páginas huérfanas** — Bulk Export > All Inlinks. Páginas sin enlaces internos que rankean en SE Ranking = oportunidad de mejora de PageRank interno
-- **Integración** — GSC (columnas de impresiones/clics en crawl), GA4 (sesiones por URL), PSI (solo en crawl selectivo)
-- **Falsos positivos** — H1 missing en Divi/Elementor, duplicate content en paginación sin canonical, broken links en modales JS, slow page sin caché CDN, images missing alt en CSS backgrounds
-- **Performance** — tabla de tiempo estimado por tamaño de sitio y modo de crawl. RAM mínima 8GB para JS rendering
+- **Spider vs JS Rendering** — Spider: fast, does not execute JS. JS Rendering: uses Chromium, 5-10x slower, mandatory for Divi/Elementor. Selective crawl by URL list for large sites
+- **CMS configuration** — WordPress (exclusions for wp-admin, feeds, searches; JS timeout 10s) and PrestaShop (session/currency/language parameters to exclude; Accept-Language header)
+- **Key reports** — Response Codes (302->301 redirects, linked 404s, 500s), Page Titles (missing, duplicate, length), Meta Description, H1 (missing, multiple), Canonicals (pointing to 404, missing canonical), Directives (unintentional noindex), Images (alt text, size)
+- **Orphan pages** — Bulk Export > All Inlinks. Pages without internal links that rank in SE Ranking = opportunity to improve internal PageRank
+- **Integration** — GSC (impressions/clicks columns in crawl), GA4 (sessions per URL), PSI (selective crawl only)
+- **False positives** — H1 missing in Divi/Elementor, duplicate content in pagination without canonical, broken links in JS modals, slow page without CDN cache, images missing alt in CSS backgrounds
+- **Performance** — estimated time table by site size and crawl mode. Minimum 8GB RAM for JS rendering
 
 ---
 
-### Herramienta — Semrush
+### Tool — Semrush
 
 **File:** `skills/semrush/SKILL.md`
 
-Uso e interpretación de Semrush como herramienta complementaria en el stack de auditoría.
+Semrush use and interpretation as a complementary tool in the audit stack.
 
-- **Organic Research** — distribución de posiciones (top 3 / 4-10 / 11-100), top páginas, tendencia histórica, branded vs non-branded. Precisión: ±40%, usar como tendencia
-- **Keyword Gap** — Missing (mayor oportunidad), Weak (mejorar posición), Untapped (validar demanda). Intents: Informational, Navigational, Commercial, Transactional
-- **Backlink Gap** — dominios que enlazan a competidores pero no al cliente. Filtrar por Authority Score >30
-- **Site Audit** — crawler básico. En el flujo de auditoría, Screaming Frog es el crawler principal. Semrush Site Audit como check secundario
-- **Traffic Analytics** — estimación de tráfico total (no solo orgánico). Útil para comparativa de canales con competidores. No usar como cifra real
-- **Authority Score** — métrica propia, no PageRank. Tabla de rangos. Usar como referencia comparativa, no como objetivo
-- **SE Ranking vs Semrush** — SE Ranking para seguimiento preciso de keywords definidas, Semrush para discovery del dominio completo. Flujo: Semrush descubre → SE Ranking rastrea
-- **Por qué las posiciones difieren** — fecha de medición, datacenter, localización de la solicitud
-- Exports útiles, limitaciones a comunicar al cliente
+- **Organic Research** — position distribution (top 3 / 4-10 / 11-100), top pages, historical trend, branded vs non-branded. Precision: +-40%, use as trend
+- **Keyword Gap** — Missing (biggest opportunity), Weak (improve position), Untapped (validate demand). Intents: Informational, Navigational, Commercial, Transactional
+- **Backlink Gap** — domains linking to competitors but not the client. Filter by Authority Score >30
+- **Site Audit** — basic crawler. In the audit flow, Screaming Frog is the main crawler. Semrush Site Audit as secondary check
+- **Traffic Analytics** — total traffic estimation (not just organic). Useful for channel comparison with competitors. Do not use as real figures
+- **Authority Score** — proprietary metric, not PageRank. Range table. Use as comparative reference, not as a target
+- **SE Ranking vs Semrush** — SE Ranking for precise tracking of defined keywords, Semrush for full domain discovery. Flow: Semrush discovers, SE Ranking tracks
+- **Why positions differ** — measurement date, datacenter, request location
+- Useful exports, limitations to communicate to the client
 
 ---
 
-### Técnico — robots.txt
+### Technical — robots.txt
 
 **File:** `skills/robots-txt/SKILL.md`
 
-Especificación técnica completa y plantillas por tipo de sitio, con foco en Google Merchant Center.
+Full technical specification and templates by site type, with focus on Google Merchant Center.
 
-- **Especificación Google** — precedencia Allow/Disallow (gana la regla más larga), matching de user-agent (específico no hereda de `*`), wildcards `*` y `$`, AdsBot fuera del wildcard `*`
-- **Merchant Center** — tabla de errores de MC y su causa en robots.txt, solución oficial (Googlebot + Googlebot-image con `Disallow:` vacío), directivas del bloque `*` que causan desaprobaciones
-- **Plantillas** — sitio informativo/blog, e-commerce sin MC, e-commerce con MC (con sección "qué NO incluir")
-- **Governance de IA** — tabla de bots de entrenamiento (bloquear) vs bots de búsqueda IA (permitir). Diferencia entre GPTBot y ChatGPT-User
-- **Errores comunes** — `Disallow: /*?` sin bloque Googlebot, `*.php` bloqueando admin-ajax, sitemap con dominio incorrecto, AdsBot no gestionado, wildcard al inicio de path
-- **WordPress** — cómo editar: plugin SEO, archivo físico, hook PHP
-- Checklist de evaluación por criticidad (crítico / alto / medio / bajo)
+- **Google specification** — Allow/Disallow precedence (longest rule wins), user-agent matching (specific does not inherit from `*`), `*` and `$` wildcards, AdsBot outside the `*` wildcard
+- **Merchant Center** — MC error table and its cause in robots.txt, official solution (Googlebot + Googlebot-image with empty `Disallow:`), `*` block directives that cause disapprovals
+- **Templates** — informational site/blog, e-commerce without MC, e-commerce with MC (with "what NOT to include" section)
+- **AI governance** — table of training bots (block) vs AI search bots (allow). Difference between GPTBot and ChatGPT-User
+- **Common errors** — `Disallow: /*?` without Googlebot block, `*.php` blocking admin-ajax, sitemap with wrong domain, unmanaged AdsBot, wildcard at the start of path
+- **WordPress** — how to edit: SEO plugin, physical file, PHP hook
+- Evaluation checklist by criticality (critical / high / medium / low)
 
 ---
 
-### Técnico — Hreflang
+### Technical — Hreflang
 
 **File:** `skills/hreflang/SKILL.md`
 
-Implementación y auditoría de hreflang para sitios WordPress multilingües o multirregionales.
+Hreflang implementation and auditing for multilingual or multi-regional WordPress sites.
 
-- **Fundamentos** — cuándo implementar, cuándo no, sintaxis obligatoria, regla de reciprocidad y self-reference
-- **WPML** — configuración, issue de página de prueba indexable, conflicto con page builders
-- **TranslatePress** — conflicto de hreflang duplicado con Yoast. Solución: desactivar en uno de los dos
-- **Yoast + instalaciones independientes** — schema @id WebSite incorrecto en subdirectorio. Snippet PHP fix
-- **HFCM (implementación manual)** — cuándo usar en lugar de plugin global. Setup por página específica
-- **Hreflang Manager Lite** — riesgo de modo global con traducción parcial: genera reciprocidad rota masiva
-- **Errores comunes** — reciprocidad rota, URLs con 404/redirect, código de idioma incorrecto, x-default ausente, hreflang duplicado
-- **Validación** — Screaming Frog Hreflang tab (noreturn, incorrect code, non-canonical), GSC > Internacional, snippet JS de verificación manual
-- Checklist por criticidad (crítico / alto / medio / bajo)
+- **Fundamentals** — when to implement, when not to, mandatory syntax, reciprocity rule and self-reference
+- **WPML** — configuration, indexable test page issue, conflict with page builders
+- **TranslatePress** — duplicate hreflang conflict with Yoast. Solution: disable in one of the two
+- **Yoast + independent installations** — incorrect WebSite schema @id in subdirectory. PHP snippet fix
+- **HFCM (manual implementation)** — when to use instead of a global plugin. Per-page setup
+- **Hreflang Manager Lite** — global mode risk with partial translation: generates massive broken reciprocity
+- **Common errors** — broken reciprocity, URLs with 404/redirect, incorrect language code, missing x-default, duplicate hreflang
+- **Validation** — Screaming Frog Hreflang tab (noreturn, incorrect code, non-canonical), GSC > International, manual JS verification snippet
+- Checklist by criticality (critical / high / medium / low)
 
 ---
 
-## Instalación
+## Installation
 
-Copia cualquier carpeta de skill a `~/.claude/skills/[nombre]/SKILL.md`.
-Claude Code las carga automáticamente desde ese directorio.
+Copy any skill folder to `~/.claude/skills/[name]/SKILL.md`.
+Claude Code loads them automatically from that directory.
 
-## Privacidad
+## Privacy
 
-Todo el conocimiento está anonimizado. Sin nombres de clientes, dominios ni
-datos identificables. Conforme con RGPD.
+All knowledge is anonymized. No client names, domains, or identifying data.
+GDPR compliant.
 
-## Contribuir
+## Contributing
 
-Enriquecer las skills con patrones reales a medida que aparecen nuevos issues.
-Regla: el conocimiento entra anonimizado — el patrón importa, no la fuente.
+Enrich the skills with real patterns as new issues appear.
+Rule: knowledge is added anonymized — the pattern matters, not the source.
