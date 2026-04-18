@@ -198,8 +198,28 @@ Hreflang implementation and auditing for multilingual or multi-regional WordPres
 
 ## Installation
 
-Copy any skill folder to `~/.claude/skills/[name]/SKILL.md`.
-Claude Code loads them automatically from that directory.
+### Plugin install (Claude Code 1.0.33+)
+
+```
+/plugin install seo-audit-skills@uhartharper-seo-audit-skills
+```
+
+### Manual install — Unix / macOS / Linux
+
+```bash
+git clone --depth 1 https://github.com/uhartharper/seo-audit-skills.git
+bash seo-audit-skills/install.sh
+```
+
+### Manual install — Windows (PowerShell)
+
+```powershell
+git clone --depth 1 https://github.com/uhartharper/seo-audit-skills.git
+powershell -ExecutionPolicy Bypass -File seo-audit-skills\install.ps1
+```
+
+All scripts copy each `skills/*/SKILL.md` to `~/.claude/skills/[name]/SKILL.md`.
+Running them again updates existing skills.
 
 ## Privacy
 

@@ -13,5 +13,6 @@ Thumbs.db
 *.csv
 *.xlsx
 *.json
+!.claude-plugin/plugin.json
 reports/
 audits/
