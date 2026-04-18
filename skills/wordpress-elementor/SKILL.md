@@ -35,7 +35,7 @@ además de bloques `<style>` inline para estilos widget-específicos.
 - Google Fonts puede servirse localmente desde
   `/wp-content/uploads/elementor/google-fonts/` — verificar si está activo.
 
-**Stacks habituales en cartera PubliUp:**
+**Stacks técnicos habituales:**
 
 | Variante | Componentes |
 |----------|------------|
@@ -43,7 +43,7 @@ además de bloques `<style>` inline para estilos widget-específicos.
 | Pro | Elementor Pro + Hello Elementor o GeneratePress + Yoast + WP Rocket |
 | WooCommerce | Elementor Pro + WooCommerce + WP Rocket + Yoast SEO + Schema Pro |
 
-**Temas frecuentes:** Hello Elementor (child: `helloup`), GeneratePress
+**Temas frecuentes:** Hello Elementor (con child theme), GeneratePress
 
 ---
 
@@ -172,8 +172,7 @@ add_action('wp_enqueue_scripts', function() {
 
 ### Inline CSS masivo — bloques `<style>` de Elementor (ALTO — CWV)
 
-**Síntoma:** 40+ bloques `<style>` inline en el `<head>` sumando ~94 KB
-(observado en Coronas Urgentes).
+**Síntoma:** 40+ bloques `<style>` inline en el `<head>` sumando 80-100+ KB.
 
 **Causa:** Elementor inyecta estilos personalizados de cada widget directamente
 en el HTML. En sitios con muchos widgets y secciones, esto acumula CSS inline
@@ -197,7 +196,7 @@ se inyectan inline. Divi inyecta todo inline.
 
 **Causa:** WP Rocket inyecta inline la clase `RocketLazyLoadScripts` completa y
 el objeto de configuración `elementorFrontendConfig` como script inline. En
-Bopel se detectaron 737 KB; en Coronas Urgentes 1.39 MB.
+sitios con muchos widgets se han medido payloads de 700 KB - 1.4 MB.
 
 **Impacto:** TTFB parsing alto, INP degradado, TBT elevado.
 
@@ -238,7 +237,7 @@ hero que usen background, añadir preload manual del background.
 
 ### Seguridad — headers ausentes (CRÍTICO — frecuencia: 100%)
 
-Observado en los 4 clientes Elementor. Sin excepción.
+Detectado de forma consistente en auditorías. Frecuencia: muy alta.
 
 **Solución Nginx:**
 ```nginx
@@ -366,8 +365,7 @@ Disallow: /checkout/
 
 ### PHP EOL — Elementor y PHP 7.4 (CRÍTICO si presente)
 
-Detectado en Sana Quiropráctica: PHP 7.4.33 (EOL nov 2022).
-Elementor 4.x requiere mínimo PHP 7.4 pero **recomienda PHP 8.0+**.
+Elementor 4.x requiere mínimo PHP 7.4 pero **recomienda PHP 8.0+**. PHP 7.4 está EOL desde nov 2022.
 
 **Fix:** Actualizar en el panel del hosting (Hostinger hPanel, cPanel, Plesk).
 Pasos: PHP Manager > Seleccionar PHP 8.2 o 8.3 > Guardar.
@@ -392,9 +390,8 @@ posible. Mitigaciones:
 
 ### Canibalización en páginas de localización (MEDIO)
 
-Observado en Primera Imagen Limpiezas (14+ páginas de localización) y
-Bopel (8.106 URLs de tanatorios). Elementor facilita duplicar templates
-de página cambiando solo el nombre de localidad.
+Elementor facilita duplicar templates de página cambiando solo el nombre de
+localidad. Detectado en sitios de servicios locales con 10+ páginas de zona.
 
 **Señales de alerta:**
 - Múltiples páginas con la misma imagen decorativa (separador, divider)
@@ -460,17 +457,6 @@ BAJO
 - `srcset` y `sizes` en imágenes → delivery responsivo
 - ShortPixel CDN con WebP/AVIF si está configurado
 - Canonical self-referencing en HTML inicial
-
----
-
-## Clientes en cartera con WordPress + Elementor
-
-| Cliente | Dominio | Variante | Server | Notas clave |
-|---------|---------|---------|--------|-------------|
-| Primera Imagen Limpiezas | primeraimagenlimpiezas.es | Elementor 4.0.0 + Hello Elementor | Nginx/Plesk | fetchpriority en decorativa; 90 recursos; 14+ páginas loc. |
-| Coronas Urgentes | coronasurgentes.es | Elementor + WooCommerce + WP Rocket | Apache/Ubuntu | 1.39 MB HTML; robots.txt bloqueante global |
-| Bopel | bopel.es | Elementor Pro + WooCommerce + WP Rocket + Schema Pro | Apache/Ubuntu | WP Rocket SVG placeholder en LCP; 8.106 URLs sitemap |
-| Sana Quiropráctica | sanaquiropractica.com | Elementor 4.0.0 + Hello Elementor | LiteSpeed/Hostinger | PHP 7.4 EOL; sitemap con noindex header; GTM bloqueante |
 
 ---
 

@@ -20,7 +20,7 @@ description: >
 ## Contexto de plataforma
 
 Divi Theme (Elegant Themes) es un page builder basado en shortcodes y módulos
-propietarios. Versión habitual en nuestra cartera: **4.27.x**.
+propietarios. Versión habitual: **4.27.x**.
 
 **Características clave con impacto SEO:**
 - Renderizado **server-side (SSR)**: el contenido está en el HTML inicial. No es
@@ -32,7 +32,7 @@ propietarios. Versión habitual en nuestra cartera: **4.27.x**.
 - Los módulos Title/Heading de Divi **no generan H1 automáticamente** — usan
   `<div>` con clases propias salvo que se configure explícitamente la etiqueta HTML.
 
-**Stack habitual PubliUp:**
+**Stack técnico habitual:**
 ```
 WordPress 6.x + Divi 4.27.x
 + Yoast SEO
@@ -459,17 +459,6 @@ BAJO
 - Yoast schema graph completo (WebPage, WebSite, BreadcrumbList)
 - HTTPS enforced con redirect 301 HTTP → HTTPS
 - Cookies con `SameSite=Strict` y `Secure`
-
----
-
-## Clientes en cartera con WordPress + Divi
-
-| Cliente | Dominio | Versión Divi | SEO Plugin | Notas |
-|---------|---------|-------------|-----------|-------|
-| Alvamark | alvamark.com (ES + EN) | 4.x | Yoast | 2 instalaciones WP independientes; JS rendering — WebFetch obligatorio |
-| Acoran | acoran.es | 4.27.6 | Yoast | B2B compliance |
-| Naturprint | naturprint.com | 4.27.6 | Yoast | Nginx/Plesk; child theme wpup |
-| Pérez-Ondina | perez-ondina.es | 4.27.6 | Yoast | Fisioterapia Móstoles; H1 ausente en homepage |
 
 ---
 

@@ -5,7 +5,7 @@ description: >
   Issues recurrentes, configuraciones del backoffice, estructura de URLs,
   sitemap y performance específicos de PrestaShop. Usar cuando el sitio
   auditado corra PrestaShop o cuando el usuario mencione "PrestaShop",
-  "controlador", "CCC", "1_index_sitemap" o "childpusupocho".
+  "controlador", "CCC" o "1_index_sitemap".
 ---
 
 # PrestaShop — Guía SEO Técnica
@@ -32,7 +32,7 @@ El contenido está en el HTML inicial — no requiere JS para ser indexado.
 - robots.txt **generado automáticamente** por PrestaShop con bloqueo de
   parámetros de consulta y controladores internos.
 
-**Stack habitual en cartera PubliUp:**
+**Stack técnico habitual:**
 ```
 PrestaShop 8.x + PHP 8.1.x + Nginx/Plesk
 + CreativeElements (page builder opcional)
@@ -330,9 +330,6 @@ implementación manual en el tema.
 
 ### Seguridad — headers (variable)
 
-**Observado:** Mayorflor tenía HSTS + X-Frame-Options + headers correctos.
-Las Camelias no tenía headers verificados.
-
 **Solución Nginx:**
 ```nginx
 add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
@@ -361,11 +358,6 @@ En php.ini: `expose_php = Off`
 ---
 
 ### Schema Product + Offer (e-commerce)
-
-**Situación en cartera:**
-- Mayorflor: Product schema con Offer, Brand, sku, mpn — bien implementado.
-  Falta AggregateRating.
-- Las Camelias: Sin Product schema.
 
 **PrestaShop genera Product schema automáticamente** en versiones recientes
 si está habilitado en las preferencias del módulo. Verificar si el módulo SEO
@@ -417,7 +409,7 @@ ALTO
 MEDIO
 [ ] Product schema: ¿presente con Offer (price, availability, currency)?
 [ ] AggregateRating: ¿módulo de valoraciones activo y exportando a JSON-LD?
-[ ] LocalBusiness / Florist schema en homepage
+[ ] LocalBusiness schema en homepage (si aplica al tipo de negocio)
 [ ] SearchAction schema (WebSite)
 [ ] robots.txt: ¿política de AI crawlers definida?
 [ ] IndexNow: ¿módulo instalado?
@@ -440,7 +432,7 @@ BAJO
 ## Positivos habituales en sitios PrestaShop bien configurados
 
 - SSR confirmado: contenido visible sin JS (ventaja directa vs JS-heavy CMSs)
-- HSTS con preload (observado en Mayorflor: `max-age=31536000; includeSubDomains; preload`)
+- HSTS con preload (`max-age=31536000; includeSubDomains; preload`)
 - Security headers completos (cuando el hosting tiene configuración dedicada)
 - Product schema con Offer bien implementado (generado nativamente por PS)
 - BreadcrumbList correcto en páginas de producto
@@ -449,15 +441,6 @@ BAJO
 - HTTPS enforced con 301 HTTP→HTTPS y www→no-www en un solo hop
 - robots.txt generado automáticamente por PrestaShop con bloqueo de parámetros
   de carrito, búsqueda y sesión
-
----
-
-## Clientes en cartera con PrestaShop
-
-| Cliente | Dominio | Versión PS | Server | Notas clave |
-|---------|---------|-----------|--------|-------------|
-| Mayorflor | mayoflor.com | 8.x (PHP 8.1.34) | Nginx/Plesk | Cache-Control no-store; sitemap.xml 404; CreativeElements; tema childpusupocho |
-| Las Camelias | lascameliasartefloral.com | 8.x | N/A | Sin canonical en home; 3 H1; schema ausente; sitemap.xml 404 |
 
 ---
 
