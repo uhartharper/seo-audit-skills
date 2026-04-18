@@ -332,6 +332,68 @@ H2 → H3 → H4 sin H1.
 
 ---
 
+
+### Hreflang — Implementación selectiva con HFCM (MEDIO)
+
+Para sitios bilingües donde solo parte de las páginas tienen equivalente en el otro
+idioma, usar un plugin de hreflang en modo global genera reciprocidad rota
+(página ES apunta a página EN que no existe → Google ignora o penaliza el hreflang completo).
+
+**Solución recomendada — HFCM (Header Footer Code Manager):**
+Inyectar hreflang solo en las páginas que SÍ tienen equivalente real en el otro idioma.
+
+```html
+<link rel="alternate" hreflang="es" href="https://dominio.com/" />
+<link rel="alternate" hreflang="en" href="https://dominio.com/en/" />
+<link rel="alternate" hreflang="x-default" href="https://dominio.com/" />
+```
+
+Configurar en HFCM: New Snippet > Header > Pages: seleccionar solo las páginas
+con traducción confirmada. No activar en "All Pages".
+
+**Por qué NO usar Hreflang Manager Lite en modo global:**
+- Aplica hreflang a todas las URLs del idioma A apuntando a todas las del idioma B
+- Si hay 9.000 páginas en ES y 200 en EN → genera 8.800 referencias a páginas inexistentes
+- Google detecta reciprocidad rota y puede ignorar todo el hreflang del dominio
+- Solo activar modo global si el sitio tiene traducción completa (>95% de páginas)
+
+**Verificación de reciprocidad:**
+La página referenciada debe tener un hreflang apuntando de vuelta. Si A → B pero
+B no apunta a A: reciprocidad rota → Google ignora el par.
+
+---
+
+### Yoast — Schema @id WebSite incorrecto en setup multilingüe (ALTO)
+
+**Síntoma:** En sitios con dos instalaciones WordPress independientes (idioma principal +
+subdirectorio EN), el schema JSON-LD de la instalación secundaria tiene
+`"@id": "https://dominio.com/en/#website"` en lugar de `"https://dominio.com/#website"`.
+
+**Causa:** Yoast genera el `@id` del WebSite basándose en la URL raíz de cada instalación.
+La instalación del subdirectorio `/en/` construye el `@id` con esa base.
+
+**Impacto:** Google no relaciona las dos instalaciones como la misma entidad web.
+La instalación secundaria aparece como un sitio independiente en el Knowledge Graph.
+Los signals de autoridad no se consolidan.
+
+**Verificación:**
+WebFetch de la URL en idioma secundario → buscar bloque `"@type":"WebSite"` en JSON-LD
+→ verificar que `"@id"` apunta a la URL raíz principal del dominio.
+
+**Solución — Yoast SEO > Search Appearance > General > Knowledge Graph:**
+Asegurar que la URL en ese campo apunta al dominio principal (`https://dominio.com/`).
+
+**Solución alternativa — snippet PHP en functions.php:**
+```php
+add_filter('wpseo_schema_website', function($data) {
+    $data['@id'] = 'https://dominio.com/#website';
+    $data['url'] = 'https://dominio.com/';
+    return $data;
+});
+```
+
+---
+
 ### IndexNow no implementado (MEDIO)
 
 **Síntoma:** No existe archivo `[key].txt` en la raíz del dominio.
@@ -437,6 +499,9 @@ MEDIO
 [ ] IndexNow activo (Yoast v21+ o plugin)
 [ ] Sitemap: páginas legales/utilidad con noindex y excluidas
 [ ] Sitemap: post_tag verificado (¿genera index bloat?)
+[ ] Hreflang: si es multilingüe, ¿implementado solo en páginas con equivalente real?
+[ ] Hreflang: ¿reciprocidad verificada (A→B y B→A)?
+[ ] Schema @id WebSite: ¿apunta a URL raíz principal, no a subdirectorio?
 [ ] Robots.txt: política de AI crawlers definida
 [ ] Ninja Forms / GDPR plugin: ¿cargan JS/CSS en todas las páginas?
 [ ] Dashicons: ¿se cargan en frontend?

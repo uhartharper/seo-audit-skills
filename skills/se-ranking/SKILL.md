@@ -193,3 +193,34 @@ Al trabajar con exports de SE Ranking en análisis, las columnas clave son:
 | Slow page speed | Medición sin caché de CDN | PSI real o CrUX |
 | Broken links | Links en JS no renderizado | SF modo JS o crawl manual |
 | Missing meta description | CMS genera dinámica en JS | WebFetch directo |
+
+---
+
+
+## Detección de contenido sin intent comercial
+
+SE Ranking puede revelar que la mayoría del tráfico orgánico de un sitio proviene
+de keywords sin intención comercial ni de contacto.
+
+**Señales de alerta:**
+- Las top URLs por tráfico estimado son artículos de blog, no páginas de servicio/producto
+- Las keywords que generan impresiones en esas URLs son informacionales puras
+  (normativas, definiciones, curiosidades del sector, materiales)
+- Las páginas de servicio tienen posiciones 20-40 con tráfico mínimo o nulo
+
+**Por qué es un riesgo:**
+- El dominio se perfila como sitio editorial/informativo, no transaccional
+- Los artículos de alto tráfico sin conversión no justifican inversión editorial continua
+- Publicar más contenido informacional amplifica el problema de perfil de dominio
+
+**Qué hacer con estos datos:**
+1. Calcular el ratio tráfico estimado de páginas de servicio vs artículos de blog
+2. Identificar qué artículos tienen keywords completamente ajenas al negocio
+3. Reportar el porcentaje de tráfico que viene de contenido sin intent comercial
+4. Pausar producción editorial nueva hasta mejorar posicionamiento de páginas de servicio
+5. Priorizar reescritura de páginas de servicio sobre nueva producción de blog
+
+**Nota:** Contenido informacional no es un problema si está alineado con el funnel
+(atrae tráfico cualificado que convierte). El problema es cuando el blog atrae
+tráfico de temas completamente ajenos al negocio del cliente.
+

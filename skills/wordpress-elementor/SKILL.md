@@ -405,10 +405,66 @@ localidad. Detectado en sitios de servicios locales con 10+ páginas de zona.
 
 ---
 
+
+### LiteSpeed / Hostinger — X-Robots-Tag noindex en sitemaps XML (CRÍTICO)
+
+**Síntoma:** Todos los sitemaps devuelven el header `X-Robots-Tag: noindex, follow`
+aunque Yoast los tenga correctamente configurados. GSC reporta los sitemaps como no procesables.
+
+**Causa:** LiteSpeed Cache o la configuración del hosting aplica `noindex` globalmente
+a archivos con extensión `.xml`. El sitemap es accesible pero Google no puede procesarlo
+porque la respuesta HTTP le indica que no lo indexe.
+
+**Verificación:**
+```bash
+curl -I https://dominio.com/sitemap_index.xml | grep -i x-robots
+# Resultado problemático: X-Robots-Tag: noindex, follow
+```
+
+**Impacto:** Google no incorpora el sitemap aunque esté declarado en robots.txt y enviado
+en GSC. El crawl budget se desperdicia en descubrimiento en lugar de en crawl dirigido.
+
+**Solución A — LiteSpeed Cache:**
+LiteSpeed Cache > Avanzado > Excluir de caché → añadir `/sitemap*.xml` a exclusiones de headers.
+
+**Solución B — .htaccess (Apache/LiteSpeed):**
+```apache
+<FilesMatch "sitemap.*\.xml$">
+    Header unset X-Robots-Tag
+    Header set X-Robots-Tag "index, follow"
+</FilesMatch>
+```
+
+**Solución C — Soporte de hosting:**
+En algunos planes de Hostinger, la configuración LiteSpeed es a nivel servidor.
+Reportar el issue indicando el header exacto y la URL del sitemap afectada.
+
+**Nota:** Verificar siempre `X-Robots-Tag` en sitemaps con `curl -I` antes de
+marcar el sitemap como correctamente configurado — el status 200 no garantiza procesabilidad.
+
+---
+
+### TranslatePress — Hreflang duplicado (MEDIO)
+
+**Síntoma:** El `<head>` contiene dos bloques de hreflang para las mismas URLs:
+uno de TranslatePress y otro de Yoast SEO.
+
+**Causa:** Ambos plugins generan hreflang automáticamente si no se desactiva en uno de ellos.
+
+**Impacto:** Google puede ignorar ambos bloques si detecta conflicto.
+
+**Solución:**
+- Desactivar hreflang en Yoast: SEO > Search Appearance > General > Hreflang: Off
+- Dejar TranslatePress como única fuente, o viceversa
+- Verificar post-fix: `rel="alternate"` debe aparecer solo una vez por par idioma+URL en `<head>`
+
+---
+
 ## Checklist de auditoría técnica para sitios Elementor
 
 ```
 CRÍTICO
+[ ] LiteSpeed/Hostinger: ¿X-Robots-Tag: noindex en sitemaps XML? (curl -I sitemap_index.xml)
 [ ] LCP hero: ¿imagen con src real o SVG placeholder (data-src / data-lazy-src)?
 [ ] fetchpriority="high": ¿está en la imagen LCP o en elemento incorrecto?
 [ ] Security headers: HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy
@@ -432,6 +488,7 @@ MEDIO
 [ ] GTM: ¿tags audited? ¿fire en Page View o DOM Ready?
 [ ] WooCommerce + Yoast + Schema Pro: ¿BreadcrumbList duplicado?
 [ ] FAQPage schema: ¿implementado en sitio e-commerce? (no genera rich results)
+[ ] TranslatePress + Yoast: ¿hreflang duplicado en <head>?
 [ ] Index bloat: páginas de localización con contenido idéntico
 [ ] Author archives: ¿indexados? (Yoast > Apariencia > Archivos)
 [ ] "Sin categoría": ¿en sitemap?

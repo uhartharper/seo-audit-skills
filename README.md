@@ -178,6 +178,24 @@ Especificación técnica completa y plantillas por tipo de sitio, con foco en Go
 
 ---
 
+### Técnico — Hreflang
+
+**File:** `skills/hreflang/SKILL.md`
+
+Implementación y auditoría de hreflang para sitios WordPress multilingües o multirregionales.
+
+- **Fundamentos** — cuándo implementar, cuándo no, sintaxis obligatoria, regla de reciprocidad y self-reference
+- **WPML** — configuración, issue de página de prueba indexable, conflicto con page builders
+- **TranslatePress** — conflicto de hreflang duplicado con Yoast. Solución: desactivar en uno de los dos
+- **Yoast + instalaciones independientes** — schema @id WebSite incorrecto en subdirectorio. Snippet PHP fix
+- **HFCM (implementación manual)** — cuándo usar en lugar de plugin global. Setup por página específica
+- **Hreflang Manager Lite** — riesgo de modo global con traducción parcial: genera reciprocidad rota masiva
+- **Errores comunes** — reciprocidad rota, URLs con 404/redirect, código de idioma incorrecto, x-default ausente, hreflang duplicado
+- **Validación** — Screaming Frog Hreflang tab (noreturn, incorrect code, non-canonical), GSC > Internacional, snippet JS de verificación manual
+- Checklist por criticidad (crítico / alto / medio / bajo)
+
+---
+
 ## Instalación
 
 Copia cualquier carpeta de skill a `~/.claude/skills/[nombre]/SKILL.md`.

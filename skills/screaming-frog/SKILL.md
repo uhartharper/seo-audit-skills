@@ -223,8 +223,59 @@ SF permite filtrar cualquier columna. Para encontrar patterns:
 | Title duplicado en paginación | `/categoria/` y `/categoria/page/2/` | ¿Tienen canonical a página 1? |
 | Meta description missing (PrestaShop) | Generada dinámicamente para categorías | WebFetch directo a la URL |
 | Broken internal link | Link en popup o modal JS | Inspeccionar manualmente |
+| Carácter Unicode oculto en title | Carácter invisible (U+200B, NBSP) en el title | Exportar CSV y abrir con editor hex; reescribir el campo desde cero |
+| H1 tardío en documento | H1 precedido por H2/H3 de widgets — SF solo verifica presencia, no posición | Console DevTools: querySelectorAll h1-h6 para ver orden real |
 | Slow page (SF mide TTFB sin caché CDN) | Primera petición siempre más lenta | PSI real o CrUX |
 | Images missing alt (Divi background) | CSS background-image no es `<img>` | No es un issue real de alt text |
+
+---
+
+
+## Patrones que requieren validación manual
+
+### Carácter Unicode oculto en title tag
+
+**Síntoma en SF:** El title aparece correcto en la columna "Title" pero tiene
+longitud anormal, o Google muestra un snippet diferente al title configurado.
+
+**Causa:** Carácter invisible como `U+200B` (zero-width space), `U+00A0` (non-breaking space)
+o `U+FEFF` (BOM) insertado al copiar/pegar desde Word, Google Docs o un editor rico del CMS.
+
+**Detección en SF:**
+- Custom Extraction > XPath: `//title/text()` → exportar y abrir CSV con editor hex
+- O comparar la longitud en caracteres reportada por SF con la longitud visual
+
+**Impacto:** Google puede truncar el title en el carácter invisible, mostrar snippet
+alternativo o ignorar el title. Afecta también a herramientas de rank tracking
+que comparan titles exactos.
+
+**Fix:** Eliminar el campo de title en el CMS y reescribirlo desde cero sin copiar/pegar.
+
+---
+
+### H1 tardío en el documento HTML (posición >50%)
+
+**Síntoma en SF:** H1 presente y correcto, pero precedido por múltiples H2, H3 o H4.
+
+**Causa:** Page builders colocan widgets de contenido (features, sliders, secciones de intro)
+antes del módulo de título principal. Esos widgets usan encabezados H2/H3 antes del H1 real.
+
+**Por qué SF no lo detecta como issue:** SF verifica presencia del H1, no su posición
+en el documento ni la jerarquía relativa al resto de encabezados.
+
+**Impacto:** Google puede interpretar los encabezados anteriores al H1 como indicadores
+del tópico principal. La jerarquía semántica queda invertida.
+
+**Verificación:**
+```javascript
+// Chrome DevTools > Console
+document.querySelectorAll('h1,h2,h3,h4,h5,h6').forEach((h, i) =>
+  console.log(i, h.tagName, h.textContent.trim().slice(0,50))
+);
+```
+
+**Fix:** Reordenar módulos del page builder para que el H1 aparezca en la primera
+sección visible, o cambiar las etiquetas de los widgets anteriores a `<div>` con clases CSS.
 
 ---
 
