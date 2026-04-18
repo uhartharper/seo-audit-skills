@@ -221,6 +221,10 @@ powershell -ExecutionPolicy Bypass -File seo-audit-skills\install.ps1
 All scripts copy each `skills/*/SKILL.md` to `~/.claude/skills/[name]/SKILL.md`.
 Running them again updates existing skills.
 
+## Works well with
+
+Works standalone. For broader SEO coverage (AI search optimization, local SEO, programmatic SEO), combine with [claude-seo](https://github.com/AgriciDaniel/claude-seo).
+
 ## Privacy
 
 All knowledge is anonymized. No client names, domains, or identifying data.
