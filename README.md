@@ -156,6 +156,22 @@ Uso e interpretación de Semrush como herramienta complementaria en el stack de 
 
 ---
 
+### Técnico — robots.txt
+
+**File:** `skills/robots-txt/SKILL.md`
+
+Especificación técnica completa y plantillas por tipo de sitio, con foco en Google Merchant Center.
+
+- **Especificación Google** — precedencia Allow/Disallow (gana la regla más larga), matching de user-agent (específico no hereda de `*`), wildcards `*` y `$`, AdsBot fuera del wildcard `*`
+- **Merchant Center** — tabla de errores de MC y su causa en robots.txt, solución oficial (Googlebot + Googlebot-image con `Disallow:` vacío), directivas del bloque `*` que causan desaprobaciones
+- **Plantillas** — sitio informativo/blog, e-commerce sin MC, e-commerce con MC (con sección "qué NO incluir")
+- **Governance de IA** — tabla de bots de entrenamiento (bloquear) vs bots de búsqueda IA (permitir). Diferencia entre GPTBot y ChatGPT-User
+- **Errores comunes** — `Disallow: /*?` sin bloque Googlebot, `*.php` bloqueando admin-ajax, sitemap con dominio incorrecto, AdsBot no gestionado, wildcard al inicio de path
+- **WordPress** — cómo editar: plugin SEO, archivo físico, hook PHP
+- Checklist de evaluación por criticidad (crítico / alto / medio / bajo)
+
+---
+
 ## Instalación
 
 Copia cualquier carpeta de skill a `~/.claude/skills/[nombre]/SKILL.md`.
