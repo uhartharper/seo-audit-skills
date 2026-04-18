@@ -35,7 +35,7 @@ además de bloques `<style>` inline para estilos widget-específicos.
 - Google Fonts puede servirse localmente desde
   `/wp-content/uploads/elementor/google-fonts/` — verificar si está activo.
 
-**Stacks habituales:**
+**Stacks habituales en cartera PubliUp:**
 
 | Variante | Componentes |
 |----------|------------|
@@ -70,7 +70,7 @@ descubrir la imagen.
 ```html
 <!-- WP Rocket conflicto -->
 <img src="data:image/svg+xml,..."
-     data-lazy-src="https://cdn.dominio.com/.../hero.webp"
+     data-lazy-src="https://cdn.shortpixel.ai/.../hero.webp"
      fetchpriority="high">  ← fetchpriority inútil si src es SVG placeholder
 ```
 
@@ -88,7 +88,7 @@ mobile y conexiones lentas.
 
 **Solución B — excluir de WP Rocket lazy load:**
 - WP Rocket > Media > LazyLoad > Excluded Images: añadir el filename de la imagen hero
-  (ej: `hero-portada`, `imagen-principal`)
+  (ej: `hero-portada`, `envio-flores-domicilio`)
 
 **Solución C — preload manual en `<head>`:**
 ```html
@@ -172,7 +172,8 @@ add_action('wp_enqueue_scripts', function() {
 
 ### Inline CSS masivo — bloques `<style>` de Elementor (ALTO — CWV)
 
-**Síntoma:** 40+ bloques `<style>` inline en el `<head>` sumando ~90+ KB.
+**Síntoma:** 40+ bloques `<style>` inline en el `<head>` sumando ~94 KB
+(observado en Coronas Urgentes).
 
 **Causa:** Elementor inyecta estilos personalizados de cada widget directamente
 en el HTML. En sitios con muchos widgets y secciones, esto acumula CSS inline
@@ -196,8 +197,7 @@ se inyectan inline. Divi inyecta todo inline.
 
 **Causa:** WP Rocket inyecta inline la clase `RocketLazyLoadScripts` completa y
 el objeto de configuración `elementorFrontendConfig` como script inline. En
-sitios con muchos módulos y WP Rocket activo se han observado payloads de
-700 KB a 1.4 MB.
+Bopel se detectaron 737 KB; en Coronas Urgentes 1.39 MB.
 
 **Impacto:** TTFB parsing alto, INP degradado, TBT elevado.
 
@@ -236,9 +236,9 @@ hero que usen background, añadir preload manual del background.
 
 ---
 
-### Seguridad — headers ausentes (CRÍTICO — frecuencia: muy alta)
+### Seguridad — headers ausentes (CRÍTICO — frecuencia: 100%)
 
-Patrón observado consistentemente en auditorías de sitios Elementor.
+Observado en los 4 clientes Elementor. Sin excepción.
 
 **Solución Nginx:**
 ```nginx
@@ -341,11 +341,9 @@ Ruta: Elementor > Tools > Replace URL / Converter.
 se generan dos `BreadcrumbList` conflictivos. Desactivar breadcrumbs en Schema Pro
 y dejar solo el de Yoast.
 
-**FAQPage schema en sitios e-commerce:** Google dejó de mostrar FAQ rich results
-en SERP para sitios que no sean gov/salud desde agosto 2023. Sin embargo,
-FAQPage schema sigue siendo relevante — Google AI Overviews, ChatGPT, Perplexity
-y Bing Copilot lo utilizan para generar respuestas. Implementar con normalidad;
-no esperar el rich result visual en SERP para sitios comerciales.
+**FAQPage schema en sitios e-commerce:** Google restringió FAQ rich results a
+sitios gov/salud desde 2023. No genera rich results en e-commerce. No añadir
+nuevas implementaciones de FAQPage en sitios comerciales.
 
 **Product schema ausente:** WooCommerce no genera automáticamente `Product` +
 `Offer` schema sin Yoast WooCommerce SEO add-on o Schema Pro correctamente
@@ -366,10 +364,10 @@ Disallow: /checkout/
 
 ---
 
-### PHP EOL — Elementor y versiones antiguas (CRÍTICO si presente)
+### PHP EOL — Elementor y PHP 7.4 (CRÍTICO si presente)
 
+Detectado en Sana Quiropráctica: PHP 7.4.33 (EOL nov 2022).
 Elementor 4.x requiere mínimo PHP 7.4 pero **recomienda PHP 8.0+**.
-PHP 7.4 está EOL desde noviembre 2022.
 
 **Fix:** Actualizar en el panel del hosting (Hostinger hPanel, cPanel, Plesk).
 Pasos: PHP Manager > Seleccionar PHP 8.2 o 8.3 > Guardar.
@@ -394,9 +392,9 @@ posible. Mitigaciones:
 
 ### Canibalización en páginas de localización (MEDIO)
 
-Elementor facilita duplicar templates de página cambiando solo el nombre de
-localidad. Sitios de servicios locales con 10+ páginas de localización son
-especialmente vulnerables.
+Observado en Primera Imagen Limpiezas (14+ páginas de localización) y
+Bopel (8.106 URLs de tanatorios). Elementor facilita duplicar templates
+de página cambiando solo el nombre de localidad.
 
 **Señales de alerta:**
 - Múltiples páginas con la misma imagen decorativa (separador, divider)
@@ -462,6 +460,17 @@ BAJO
 - `srcset` y `sizes` en imágenes → delivery responsivo
 - ShortPixel CDN con WebP/AVIF si está configurado
 - Canonical self-referencing en HTML inicial
+
+---
+
+## Clientes en cartera con WordPress + Elementor
+
+| Cliente | Dominio | Variante | Server | Notas clave |
+|---------|---------|---------|--------|-------------|
+| Primera Imagen Limpiezas | primeraimagenlimpiezas.es | Elementor 4.0.0 + Hello Elementor | Nginx/Plesk | fetchpriority en decorativa; 90 recursos; 14+ páginas loc. |
+| Coronas Urgentes | coronasurgentes.es | Elementor + WooCommerce + WP Rocket | Apache/Ubuntu | 1.39 MB HTML; robots.txt bloqueante global |
+| Bopel | bopel.es | Elementor Pro + WooCommerce + WP Rocket + Schema Pro | Apache/Ubuntu | WP Rocket SVG placeholder en LCP; 8.106 URLs sitemap |
+| Sana Quiropráctica | sanaquiropractica.com | Elementor 4.0.0 + Hello Elementor | LiteSpeed/Hostinger | PHP 7.4 EOL; sitemap con noindex header; GTM bloqueante |
 
 ---
 

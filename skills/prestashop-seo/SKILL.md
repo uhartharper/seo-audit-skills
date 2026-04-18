@@ -5,7 +5,7 @@ description: >
   Issues recurrentes, configuraciones del backoffice, estructura de URLs,
   sitemap y performance específicos de PrestaShop. Usar cuando el sitio
   auditado corra PrestaShop o cuando el usuario mencione "PrestaShop",
-  "controlador", "CCC" o "1_index_sitemap".
+  "controlador", "CCC", "1_index_sitemap" o "childpusupocho".
 ---
 
 # PrestaShop — Guía SEO Técnica
@@ -23,7 +23,7 @@ El contenido está en el HTML inicial — no requiere JS para ser indexado.
 
 **Diferencias clave vs WordPress:**
 - Sin page builder nativo. El frontend usa Smarty templates.
-  Algunos sitios instalan **CreativeElements** (clon de Elementor para PS) —
+  Algunos clientes instalan **CreativeElements** (clon de Elementor para PS) —
   genera los mismos problemas de CSS/JS que Elementor en WordPress.
 - El sistema de URLs incluye **ID numérico por defecto** en categorías:
   `/217-ramos-de-flores` en lugar de `/ramos-de-flores`.
@@ -32,7 +32,7 @@ El contenido está en el HTML inicial — no requiere JS para ser indexado.
 - robots.txt **generado automáticamente** por PrestaShop con bloqueo de
   parámetros de consulta y controladores internos.
 
-**Stack habitual:**
+**Stack habitual en cartera PubliUp:**
 ```
 PrestaShop 8.x + PHP 8.1.x + Nginx/Plesk
 + CreativeElements (page builder opcional)
@@ -117,7 +117,7 @@ ambas con 200, hay problema de duplicado.
   con ID a las nuevas URLs limpias antes de cambiar la configuración.
 - No hacer sin migración planificada — rompe todas las URLs existentes.
 
-**Nota:** Si el sitio no tiene historial de backlinks ni tráfico significativo
+**Nota:** Si el cliente no tiene historial de backlinks ni tráfico significativo
 en URLs con ID, la migración tiene bajo riesgo. Si tiene backlinks, priorizar
 la migración con herramienta de redirects.
 
@@ -208,7 +208,7 @@ si está disponible, o mediante hook `actionHtaccessCreate`.
 cada módulo instalado añade sus assets de forma independiente.
 
 **Issues específicos observados:**
-- CSS de módulo cargado dos veces (bug de CreativeElements)
+- `ceicons.min.css` cargado dos veces (bug de CreativeElements)
 - Google Fonts externo sin `font-display: swap`
 - jQuery sin defer (al final del body por defecto en PS, pero bloquea si está
   en head)
@@ -250,6 +250,7 @@ usan background-image CSS por defecto.
 
 O via hook `displayHeader` en un módulo personalizado:
 ```php
+// En el módulo o override de tema:
 public function hookDisplayHeader($params) {
     return '<link rel="preload" as="image"
             href="' . $this->context->link->getMediaLink('/img/cms/hero.jpg') . '"
@@ -259,14 +260,14 @@ public function hookDisplayHeader($params) {
 
 ---
 
-### PHPSESSID con expiración de décadas (MEDIO — RGPD)
+### PHPSESSID con expiración de décadas (MEDIO — GDPR)
 
 **Síntoma:** `Set-Cookie: PHPSESSID=...; expires=...-2082`.
 
 **Causa:** Configuración por defecto de PrestaShop con `session.gc_maxlifetime`
 excesivo.
 
-**Impacto:** RGPD / ePrivacy — cookie de sesión con expiración de décadas.
+**Impacto:** GDPR / ePrivacy — cookie de sesión con expiración de 56 años.
 Puede ser observación de auditoría AEPD.
 
 **Solución en php.ini o .user.ini:**
@@ -327,7 +328,10 @@ implementación manual en el tema.
 
 ---
 
-### Seguridad — headers (ALTO)
+### Seguridad — headers (variable)
+
+**Observado:** Mayorflor tenía HSTS + X-Frame-Options + headers correctos.
+Las Camelias no tenía headers verificados.
 
 **Solución Nginx:**
 ```nginx
@@ -358,12 +362,14 @@ En php.ini: `expose_php = Off`
 
 ### Schema Product + Offer (e-commerce)
 
+**Situación en cartera:**
+- Mayorflor: Product schema con Offer, Brand, sku, mpn — bien implementado.
+  Falta AggregateRating.
+- Las Camelias: Sin Product schema.
+
 **PrestaShop genera Product schema automáticamente** en versiones recientes
 si está habilitado en las preferencias del módulo. Verificar si el módulo SEO
 nativo lo genera o si requiere override.
-
-Campos mínimos requeridos: `name`, `description`, `image`, `offers` (con
-`price`, `priceCurrency`, `availability`).
 
 **AggregateRating** requiere tener el módulo de valoraciones activo y
 configurado para exportar datos al JSON-LD.
@@ -411,7 +417,7 @@ ALTO
 MEDIO
 [ ] Product schema: ¿presente con Offer (price, availability, currency)?
 [ ] AggregateRating: ¿módulo de valoraciones activo y exportando a JSON-LD?
-[ ] LocalBusiness schema en homepage (si negocio local)
+[ ] LocalBusiness / Florist schema en homepage
 [ ] SearchAction schema (WebSite)
 [ ] robots.txt: ¿política de AI crawlers definida?
 [ ] IndexNow: ¿módulo instalado?
@@ -425,6 +431,7 @@ BAJO
 [ ] meta keywords: ¿vacíos o eliminados?
 [ ] Theme path expuesto (/themes/[nombre]/): información disclosure menor
 [ ] lastmod en sitemap: ¿actualizado en cada cambio?
+[ ] /rows u otras URLs inexplicadas en sitemap
 [ ] HTML lang attribute: formato correcto ("es" no "lang-es")
 ```
 
@@ -433,7 +440,7 @@ BAJO
 ## Positivos habituales en sitios PrestaShop bien configurados
 
 - SSR confirmado: contenido visible sin JS (ventaja directa vs JS-heavy CMSs)
-- HSTS con preload (`max-age=31536000; includeSubDomains; preload`)
+- HSTS con preload (observado en Mayorflor: `max-age=31536000; includeSubDomains; preload`)
 - Security headers completos (cuando el hosting tiene configuración dedicada)
 - Product schema con Offer bien implementado (generado nativamente por PS)
 - BreadcrumbList correcto en páginas de producto
@@ -442,6 +449,15 @@ BAJO
 - HTTPS enforced con 301 HTTP→HTTPS y www→no-www en un solo hop
 - robots.txt generado automáticamente por PrestaShop con bloqueo de parámetros
   de carrito, búsqueda y sesión
+
+---
+
+## Clientes en cartera con PrestaShop
+
+| Cliente | Dominio | Versión PS | Server | Notas clave |
+|---------|---------|-----------|--------|-------------|
+| Mayorflor | mayoflor.com | 8.x (PHP 8.1.34) | Nginx/Plesk | Cache-Control no-store; sitemap.xml 404; CreativeElements; tema childpusupocho |
+| Las Camelias | lascameliasartefloral.com | 8.x | N/A | Sin canonical en home; 3 H1; schema ausente; sitemap.xml 404 |
 
 ---
 
