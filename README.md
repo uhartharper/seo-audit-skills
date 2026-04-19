@@ -7,7 +7,7 @@ Built from real audit patterns across:
 - **CMS**: WordPress (Divi, Elementor, WooCommerce), PrestaShop, Shopify
 - **Analytics & tracking**: GA4, Google Tag Manager
 - **SEO tools**: Screaming Frog, SE Ranking, Semrush
-- **Technical**: robots.txt, sitemap, Core Web Vitals, cache, images, SSL, schema, hreflang
+- **Technical**: robots.txt, sitemap, Core Web Vitals, cache, images, SSL/HTTPS, schema markup, hreflang, third-party scripts
 
 All knowledge is anonymized and GDPR compliant — no client data, no domains,
 no identifying information. The pattern matters, not the source.
@@ -211,6 +211,23 @@ Hreflang implementation and auditing for multilingual or multi-regional WordPres
 - **Validation** — Screaming Frog Hreflang tab (noreturn, incorrect code, non-canonical), GSC > International, manual JS verification snippet
 - **Single-language multi-region** — es-ES / es-MX / es-AR structure, x-default placement, canonical per region, WordPress implementation options
 - Checklist by criticality (critical / high / medium / low)
+
+---
+
+### Technical — Schema Markup
+
+**File:** `skills/schema-markup/SKILL.md`
+
+JSON-LD structured data implementation, validation, and E-E-A-T signals.
+
+- **Type selection** — by page type: Organization/LocalBusiness, Article, FAQPage, BreadcrumbList, Product+Offer, MedicalWebPage, AggregateRating
+- **Documented bugs** — Rank Math `datePublished=1970-01-01`, Rank Math lowercase `@type`, logo < 112×112px, `specialty` with text instead of enum URL, `sameAs` with dead URLs (Google+), duplicate `@id` in subdirectory Yoast installations
+- **FAQPage** — rich results restricted to gov/health since 2023, but still valuable for semantic understanding, Bing, and AI extraction (ChatGPT, Perplexity, AI Overviews)
+- **E-E-A-T** — author schema with `jobTitle`, `description`, consistent `@id` across Article and Person pages, `sameAs` for LinkedIn/ORCID
+- **CMS implementation** — Yoast (auto-generated types, logo path, social `sameAs`), Rank Math (schema builder, known bugs), WooCommerce (Product schema with/without add-on), PrestaShop (native Product schema, AggregateRating module)
+- **Validation workflow** — validator.schema.org vs Rich Results Test vs GSC Enhancements (different tools, different purposes)
+- **MedicalWebPage** — does not generate GSC enhancement report; value is semantic, E-E-A-T, and AI extraction
+- Audit checklist by criticality
 
 ---
 
