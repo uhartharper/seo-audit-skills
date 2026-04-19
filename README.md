@@ -178,6 +178,23 @@ Full technical specification and templates by site type, with focus on Google Me
 
 ---
 
+### Technical — Sitemap XML
+
+**File:** `skills/sitemap/SKILL.md`
+
+Technical audit knowledge for XML sitemaps, covering discovery, structural validation, URL quality, and live sampling.
+
+- **Discovery** — robots.txt `Sitemap:` directive first, standard path fallback (`/sitemap_index.xml`, `/sitemap.xml`, PrestaShop `/1_index_sitemap.xml`)
+- **Critical blockers** — X-Robots-Tag noindex on the sitemap (HTTP 200 but unprocessable), HTTP status != 200, XML parse errors. Fixes for LiteSpeed Cache, Apache, Nginx
+- **Sitemap index** — sub-sitemaps returning 404, empty sub-sitemaps, authors sub-sitemap (thin content)
+- **URL quality** — HTTP/HTTPS mixing, www/non-www inconsistency, trailing slash inconsistency, uppercase paths, UTM/tracking parameters, staging URLs, cross-domain URLs, robots.txt Disallow conflicts
+- **lastmod integrity** — presence rate, `1970-01-01` Rank Math bug, invalid format, future dates, all-identical dates (static generation), all very old dates
+- **Sampling** — live checks for broken URLs, redirects (>20%), noindex pages in sitemap, canonical mismatch, slow response times (crawl budget impact)
+- **CMS patterns** — WordPress/Yoast, WordPress/Rank Math (documented bugs), PrestaShop default path, Shopify limitations, Magento
+- Audit checklist by criticality (critical / high / medium / low) + common positives
+
+---
+
 ### Technical — Hreflang
 
 **File:** `skills/hreflang/SKILL.md`
