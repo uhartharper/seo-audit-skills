@@ -1,10 +1,11 @@
 ---
 name: robots-txt
 description: >
-  Conocimiento técnico completo sobre robots.txt: especificación oficial de Google,
-  plantillas por tipo de sitio (informativo, e-commerce, WordPress, WooCommerce),
-  y requerimientos específicos para Google Merchant Center. Usar cuando se evalúe,
-  redacte o diagnostique un robots.txt, especialmente en sitios con Google Shopping.
+  robots.txt y control de indexabilidad: especificación oficial de Google, plantillas
+  por tipo de sitio (informativo, e-commerce, WordPress, WooCommerce), requerimientos
+  de Google Merchant Center, meta robots (noindex/nofollow/noarchive), X-Robots-Tag
+  HTTP header, conflict resolution Disallow vs noindex, e interpretación del informe
+  de cobertura en GSC.
 ---
 
 # robots.txt — Guía Técnica SEO
@@ -563,6 +564,106 @@ add_filter( 'robots_txt', function( $output, $public ) {
 
 **Verificación:** Acceder a `https://dominio.com/robots.txt` en ventana privada.
 Validar con Search Console > Configuración > robots.txt.
+
+---
+
+## Indexability — meta robots y X-Robots-Tag
+
+### Meta robots — directivas disponibles
+
+```html
+<!-- En el <head> de cada página -->
+<meta name="robots" content="noindex, nofollow" />
+```
+
+| Directiva | Efecto |
+|-----------|--------|
+| `index` | Google puede indexar la página (default) |
+| `noindex` | Google excluye la página del índice |
+| `follow` | Google sigue los links de la página (default) |
+| `nofollow` | Google no pasa PageRank a través de los links |
+| `noarchive` | Google no muestra el enlace de caché en SERP |
+| `nosnippet` | Google no muestra meta description ni fragmento en SERP |
+| `noimageindex` | Google no indexa las imágenes de la página |
+| `none` | Equivale a `noindex, nofollow` |
+| `all` | Equivale a `index, follow` (default — no hace falta declararlo) |
+
+**Nota:** Google acepta `<meta name="googlebot" content="...">` para reglas
+específicas a Googlebot. Si un sitio tiene audiencia en Rusia o China, considerar
+`<meta name="robots">` (para todos) vs bot-específico.
+
+### X-Robots-Tag — HTTP header
+
+Funcionalmente equivalente a meta robots pero se aplica a nivel HTTP.
+Usar cuando no se puede modificar el HTML: PDFs, imágenes, archivos descargables.
+
+```bash
+# Verificar X-Robots-Tag con curl
+curl -I https://dominio.com/documento.pdf | grep -i x-robots-tag
+```
+
+**Bug conocido — LiteSpeed + X-Robots-Tag noindex:**
+LiteSpeed Cache puede generar `X-Robots-Tag: noindex` en páginas que deberían
+indexarse, si la configuración de cache está mal alineada con las reglas de indexación.
+Verificar sistemáticamente con curl en páginas importantes cuando se usa LiteSpeed.
+
+### Cuándo usar noindex vs Disallow
+
+Ver sección "Disallow vs meta robots — Conflict resolution" más arriba para el
+árbol de decisión completo.
+
+Resumen rápido:
+
+- **Páginas que no deben indexarse pero pueden crawlearse** (GSC puede leer el noindex):
+  `<meta name="robots" content="noindex">` — SIN Disallow
+- **Páginas que no deben crawlearse ni indexarse** (area admin, archivos internos):
+  `Disallow` en robots.txt — el noindex es redundante porque Googlebot no llega a leerlo
+- **Nunca combinar** Disallow + noindex en la misma URL si el objetivo es controlar
+  la indexación — el Disallow impide que Google vea el noindex
+
+### GSC — Informe de cobertura: estados de indexabilidad
+
+**Indexadas:**
+- "Indexada, no enviada en el sitemap" — Google la descubrió y decidió indexarla sin que estuviera en sitemap. Puede ser útil (Google validó la URL) o un problema (URL no deseada indexada).
+
+**Excluidas — causas comunes:**
+
+| Estado GSC | Causa probable |
+|------------|----------------|
+| Excluida por etiqueta "noindex" | `<meta name="robots" content="noindex">` o `X-Robots-Tag: noindex` |
+| Rastreada, sin indexar actualmente | Google rastreó la página pero decidió no indexarla (thin content, duplicate) |
+| Descubierta, sin rastrear | Google sabe que existe pero no la ha crawleado aún (crawl budget) |
+| Bloqueada por robots.txt | robots.txt Disallow — Google no puede rastrear la URL |
+| Duplicada — el usuario seleccionó una canonical diferente | URL no canonical, Google sigue la canonical declarada |
+| Duplicada — Google eligió una canonical diferente | Canonical declarado ignorado — Google prefiere otra URL |
+| Redireccionada | URL redirige a otra — solo la URL destino se indexa |
+| Página 404 | URL devuelve 404 — no indexable |
+| Página de marcador de posición | Google detectó página vacía o en construcción |
+
+**Issue crítico: "Excluida por etiqueta noindex" en URLs que deben indexarse:**
+- Verificar si el plugin SEO está configurando noindex globalmente en alguna sección
+- Yoast: SEO > Search Appearance > Content Types > Posts/Pages: Search appearance > desactivado por error
+- Rank Math: Titles & Meta > Categories/Tags > robots index — verificar
+- Verificar también WordPress Settings > Reading > "Discourage search engines" — si está activo, noindex global
+
+### Detección de problemas de indexabilidad con Screaming Frog
+
+Columnas clave en la pestaña Internal:
+
+| Columna | Qué detecta |
+|---------|-------------|
+| Indexability | Indexable / Non-Indexable |
+| Indexability Status | Razón específica del estado (noindex, canonical a otra URL, blocked by robots, etc.) |
+| Meta Robots 1 | Directiva meta robots declarada |
+| X-Robots-Tag | Header HTTP de indexación |
+
+**Filtros útiles:**
+- Indexability > Non-Indexable → listar todas las URLs no indexables
+- Indexability Status > Noindex → filtrar solo las que tienen noindex declarado
+- Indexability Status > Blocked by robots.txt → filtrar bloqueadas por robots.txt
+
+**Caso importante:** páginas en sitemap + non-indexable = issue alto.
+Screaming Frog > Sitemaps > URLs in Sitemap Non-Indexable — lista todos estos casos.
 
 ---
 

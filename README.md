@@ -1,6 +1,6 @@
 # SEO Skills for Claude Code
 
-A knowledge base of 17 skills for technical SEO audits with Claude Code.
+A knowledge base of 20 skills for technical SEO audits with Claude Code.
 Each skill encodes real-world patterns: documented CMS bugs, fix-ready code
 snippets, audit checklists, and edge cases that generic AI training data misses.
 
@@ -11,7 +11,7 @@ SEOs actually use.
 - **CMS**: WordPress (Divi, Elementor, WooCommerce), PrestaShop, Shopify
 - **Analytics & tracking**: GA4, Google Tag Manager
 - **SEO tools**: Screaming Frog, SE Ranking, Semrush
-- **Technical**: robots.txt, sitemap, Core Web Vitals, cache, images, SSL/HTTPS, schema markup, hreflang, third-party scripts
+- **Technical**: robots.txt (+ indexability), sitemap, canonical tags, redirects, on-page fundamentals, Core Web Vitals, cache, images, SSL/HTTPS, schema markup, hreflang, third-party scripts
 
 All knowledge is anonymized and GDPR compliant — no client data, no domains,
 no identifying information. The pattern matters, not the source.
@@ -166,19 +166,78 @@ Semrush use and interpretation as a complementary tool in the audit stack.
 
 ---
 
-### Technical — robots.txt
+### Technical — robots.txt + Indexability
 
 **File:** `skills/robots-txt/SKILL.md`
 
-Full technical specification and templates by site type, with focus on Google Merchant Center.
+Full technical specification and templates by site type, with focus on Google Merchant Center. Includes meta robots and X-Robots-Tag indexability control.
 
 - **Google specification** — Allow/Disallow precedence (longest rule wins), user-agent matching (specific does not inherit from `*`), `*` and `$` wildcards, AdsBot outside the `*` wildcard
 - **Merchant Center** — MC error table and its cause in robots.txt, official solution (Googlebot + Googlebot-image with empty `Disallow:`), `*` block directives that cause disapprovals
 - **Templates** — informational site/blog, e-commerce without MC, e-commerce with MC (with "what NOT to include" section)
 - **AI governance** — table of training bots (block) vs AI search bots (allow). Difference between GPTBot and ChatGPT-User
-- **Common errors** — `Disallow: /*?` without Googlebot block, `*.php` blocking admin-ajax, sitemap with wrong domain, unmanaged AdsBot, wildcard at the start of path
+- **Indexability** — meta robots directives (noindex, nofollow, noarchive, noimageindex), X-Robots-Tag HTTP header, LiteSpeed Cache noindex bug, Disallow vs noindex conflict resolution
+- **GSC coverage report** — indexability states interpretation, "Google chose different canonical", noindex on pages that should be indexed
+- **Screaming Frog** — Indexability column, Non-Indexable filter, URLs in Sitemap Non-Indexable
 - **WordPress** — how to edit: SEO plugin, physical file, PHP hook
 - Evaluation checklist by criticality (critical / high / medium / low)
+
+---
+
+### Technical — Canonical Tags
+
+**File:** `skills/canonical/SKILL.md`
+
+Canonical tag implementation, auditing, and CMS-specific bugs.
+
+- **Fundamentals** — when to use canonical vs 301, mandatory rules (absolute URL, one per page, self-reference, sitemap/hreflang coherence)
+- **Pagination** — self-referencing canonical on page 2+, why canonical to page 1 removes paginated pages from the index
+- **URL parameters** — tracking/UTM parameters, WooCommerce faceted navigation, PrestaShop LayerNavigation
+- **WordPress** — Yoast (relative canonical bug in subdirectory), Rank Math + Elementor duplicate canonical bug
+- **WooCommerce** — products in multiple categories (primary category required), variation URLs, transactional endpoint canonicals
+- **PrestaShop** — URL with numeric ID, LayerNavigation facet URLs, `PS_CANONICAL_REDIRECT` and `PS_LAYERED_FULL_TREE`
+- **Canonical chains** — how chains form, PageRank deprecation per hop, fix via direct canonical to final URL
+- **JavaScript rendering** — canonical injected by JS vs static HTML, GSC URL Inspection to verify rendered canonical
+- **Common errors** — canonical to redirect, canonical to 404, canonical to noindex, multiple canonicals, relative canonical
+- **GSC signals** — "Duplicate without user-selected canonical", "Google chose different canonical"
+- Audit checklist by criticality
+
+---
+
+### Technical — Redirects
+
+**File:** `skills/redirects/SKILL.md`
+
+301/302 redirect implementation, chains, loops, and migration planning.
+
+- **Redirect types** — 301/302/307/308 comparison table with PageRank transmission and correct use cases
+- **Redirect chains** — how they form (migrations, HTTP→HTTPS, multiple rebrands), crawl budget impact, fix
+- **Redirect loops** — causes (bad .htaccess rules, bidirectional migration), detection with curl, fix
+- **WordPress** — Redirection plugin (limitations vs server-level), .htaccess RewriteRule patterns, Nginx `return 301`, multisite subdirectory handling
+- **PrestaShop** — Tráfico > Redirecciones SEO & URLs, Friendly URLs activation, category/product URL mapping from database
+- **PageRank transmission** — 301 transmits ~99% (2016 update), 302 not guaranteed, chain impact on crawl budget not on PageRank
+- **Migration checklist** — pre-migration crawl, URL mapping priorities (by inlinks), implementation, link update, sitemap update, GSC Change of Address
+- **Crawl budget** — GSC crawl stats high redirect %, Screaming Frog All Inlinks to Redirects report
+- **Special cases** — HTTPS+www in one hop vs two, soft 404 vs redirect, redirect to homepage as weak fallback
+- Audit checklist by criticality
+
+---
+
+### Technical — On-Page Fundamentals
+
+**File:** `skills/on-page-fundamentals/SKILL.md`
+
+Title tags, meta descriptions, and H1: optimization rules, common errors, and audit workflow.
+
+- **Title tag** — length (50-60 chars), structure by page type (homepage/category/product/article/local), Google rewrite causes, keyword stuffing
+- **Meta description** — length (140-155 chars), when Google ignores it, structure by page type, why absence is not always bad
+- **H1** — one per page rule, H1 ≠ title tag relationship, hierarchy structure, H1 in theme header on all pages
+- **CMS bugs** — Divi H1 not auto-generated, Elementor H1 conflict with theme, WP Rocket + Elementor template H1 duplication
+- **WooCommerce** — product title template without purchase keyword, PrestaShop category meta title defaulting to category name
+- **Cannibalization** — GSC query appearing across two URLs, detection in Screaming Frog, fix options (differentiate vs consolidate)
+- **Screaming Frog** — missing/duplicate/overlength titles, missing/duplicate meta descriptions, missing/multiple H1
+- **GSC CTR analysis** — pages with >100 impressions and CTR <2% in position 1-5 as title optimization candidates
+- Audit checklist by criticality
 
 ---
 
