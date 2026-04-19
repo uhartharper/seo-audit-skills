@@ -368,6 +368,61 @@ configurado para exportar datos al JSON-LD.
 
 ---
 
+### Multistore — implicaciones SEO (MEDIO)
+
+PrestaShop Multistore permite gestionar varias tiendas desde una única instalación.
+Cada tienda puede tener su propio dominio, idioma y catálogo.
+
+**Estructura habitual:**
+```
+Tienda principal: dominio.com         (ES — España)
+Tienda secundaria: dominio.com/en/    (EN — Internacional)
+Tienda secundaria: dominio.mx/        (ES-MX — México)
+```
+
+**Issues SEO específicos de Multistore:**
+
+1. **Sitemap por tienda:**
+   PrestaShop genera un sitemap independiente por tienda. Cada tienda debe
+   tener su sitemap declarado en su propio robots.txt.
+   ```
+   dominio.com/robots.txt → Sitemap: https://dominio.com/1_index_sitemap.xml
+   dominio.com/en/robots.txt → Sitemap: https://dominio.com/en/1_en_index_sitemap.xml
+   ```
+   Verificar que cada robots.txt declara solo el sitemap de su tienda, no el global.
+
+2. **Crawl budget fragmentado:**
+   Googlebot trata cada tienda como un sitio independiente si tienen dominios distintos.
+   Con subdirectorios (`dominio.com/en/`), comparten crawl budget del dominio principal.
+   Con subdominios o dominios separados (`dominio.mx`), el budget se separa.
+
+3. **Hreflang obligatorio:**
+   Si múltiples tiendas sirven el mismo contenido en distintos idiomas o regiones,
+   implementar hreflang entre ellas es crítico para evitar que Google duplique
+   el contenido entre tiendas.
+
+   PrestaShop no genera hreflang nativo en Multistore. Opciones:
+   - Módulo de hreflang de terceros
+   - Implementación manual en header.tpl de cada tema por tienda
+   - Hook `displayHeader` en módulo personalizado
+
+4. **Canonical en productos compartidos:**
+   Si el mismo producto aparece en múltiples tiendas (catálogo compartido),
+   las URLs son diferentes: `dominio.com/producto-X` y `dominio.com/en/product-X`.
+   Verificar que el canonical apunta a la versión correcta en cada tienda.
+
+5. **robots.txt generado automáticamente por tienda:**
+   PrestaShop genera robots.txt por tienda en el backoffice.
+   Ir a: Shop Parameters > Traffic & SEO > Generate robots.txt
+   Hacer esto para **cada tienda activa** de forma independiente.
+
+6. **Duplicación de páginas CMS:**
+   Páginas de política de privacidad, términos y condiciones, etc. suelen ser
+   idénticas en todas las tiendas. Usar canonical cross-store o noindex en las
+   versiones secundarias si el contenido es idéntico.
+
+---
+
 ### IndexNow en PrestaShop (MEDIO)
 
 **Solución:** Módulo de terceros disponible en PrestaShop Addons.

@@ -268,6 +268,81 @@ Identifica páginas donde los usuarios orgánicos llegan y se van — señal de 
 
 ---
 
+## Cross-device tracking and User ID
+
+### Why cross-device matters for SEO analysis
+
+A user who searches on mobile, abandons, then converts on desktop appears as
+two separate sessions in GA4 by default. This inflates session counts and
+distorts channel attribution — the mobile organic session may not be credited
+for the eventual conversion.
+
+### GA4 identity resolution — three methods
+
+| Method | How it works | Accuracy |
+|--------|-------------|----------|
+| Device ID | Cookie-based, per browser | Low (breaks on browser/device switch) |
+| Google Signals | Cross-device from Google accounts | Medium (requires consent, < 100% of users) |
+| User ID | Developer-assigned after login | High (only for logged-in users) |
+
+**Blended identity (default in GA4):** GA4 uses all available signals to merge
+sessions into users. More accurate than UA was, still not 100%.
+
+### Google Signals
+
+Google Signals uses data from users signed into Google accounts who have
+Ad Personalization enabled. When active, GA4 can attribute sessions across
+devices to the same user.
+
+**Enable:** GA4 Admin > Data Settings > Data Collection > Google Signals: On
+
+**Consent requirement:** Google Signals only uses data from users who consent to
+ad storage (`ad_storage: granted`). With Consent Mode active, signals are limited.
+
+**Threshold:** GA4 applies data thresholds to prevent identifying individual users.
+Reports based on Signals may show "data has been aggregated" when user counts are low.
+
+### User ID implementation
+
+For sites with user accounts (e-commerce, membership, SaaS), User ID provides
+the most accurate cross-device attribution.
+
+```javascript
+// After user logs in, set user_id in GA4
+gtag('config', 'G-XXXXXXXXXX', {
+  user_id: 'USER_DATABASE_ID'  // Use a hashed/anonymized ID, not email
+});
+
+// Or via GTM dataLayer
+dataLayer.push({
+  event: 'login',
+  user_id: 'HASHED_USER_ID'
+});
+```
+
+**Privacy requirement (GDPR):** Do not use email, name, or any directly
+identifiable information as the User ID. Use an internal database ID or
+a one-way hash.
+
+**Where to see cross-device data:**
+GA4 > Reports > User > User Explorer (requires User ID or Signals)
+GA4 > Explorations > Path Exploration > User scope (vs Session scope)
+
+### Impact on SEO analysis
+
+When interpreting organic traffic data:
+- **Without cross-device:** A user who searched on mobile and converted on desktop
+  looks like two users, with the desktop session attributed to Direct.
+- **With User ID + Signals:** GA4 can merge the journey and attribute the conversion
+  back to the original organic mobile session.
+
+For SEO audits, cross-device tracking primarily affects:
+- Conversion rate attributed to organic (may be higher than reported)
+- Mobile vs desktop split in organic (may be more balanced than reported)
+- Attribution of assisted conversions from organic
+
+---
+
 ## Exportación a BigQuery
 
 GA4 Admin > BigQuery linking (gratuito para GA4 standard).

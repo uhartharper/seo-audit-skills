@@ -444,6 +444,73 @@ marcar el sitemap como correctamente configurado — el status 200 no garantiza 
 
 ---
 
+### Elementor Theme Builder — override en archive pages (CRÍTICO)
+
+**Qué es Theme Builder:** Elementor Pro incluye un constructor de plantillas para
+secciones del tema: Header, Footer, Single (post/página individual), Archive
+(categorías, tags, autor, fecha), 404, Search Results.
+
+**El problema SEO:** Cuando Theme Builder sobreescribe una plantilla de archive,
+puede desconectar la propagación de directivas SEO del plugin (Yoast/Rank Math):
+
+1. **noindex no heredado en archive paginado:**
+   Si el plugin SEO tiene configurado `noindex` para páginas de paginación
+   (`/categoria/page/2/`), pero Theme Builder genera esas páginas usando su
+   propia plantilla, el plugin puede no inyectar el meta robots en el `<head>`.
+   El resultado: páginas paginadas indexables cuando no deberían serlo.
+   **Verificación:** `curl -s https://dominio.com/categoria/page/2/ | grep -i "noindex"`
+
+2. **Canonical incorrecto en archive con Theme Builder:**
+   Theme Builder puede generar un canonical que apunta a la plantilla de archive
+   genérica en lugar de a la URL específica de cada página.
+   **Verificación:** WebFetch de una página de categoría y buscar `rel="canonical"`.
+
+3. **BreadcrumbList duplicado:**
+   Elementor Pro puede inyectar su propio widget de breadcrumb (con su schema)
+   además del breadcrumb de Yoast. Resultado: dos bloques `BreadcrumbList` en el mismo head.
+   **Fix:** Usar solo uno — desactivar el schema de breadcrumb en Yoast (SEO >
+   Search Appearance > Breadcrumbs: Off) si se usa el widget de Elementor con schema,
+   o viceversa.
+
+4. **`/shop/` page con Theme Builder:**
+   La página shop de WooCommerce bajo Theme Builder Archive puede no recibir
+   correctamente el noindex de paginación. Verificar que `/shop/page/2/` tiene
+   `<meta name="robots" content="noindex">`.
+
+**Verificación general de Theme Builder:**
+- Elementor > Templates > Theme Builder > verificar qué páginas están siendo
+  controladas por cada template
+- Para cada archive template activo: WebFetch de varias URLs y comparar
+  canonical + meta robots con lo configurado en el plugin SEO
+
+---
+
+### Elementor Pro vs Free — diferencias con impacto SEO (MEDIO)
+
+| Feature | Free | Pro | Impacto SEO |
+|---------|------|-----|-------------|
+| Theme Builder | No | Sí | Riesgo de canonical/noindex override en archives |
+| Dynamic Tags | No | Sí | Permite usar el título de la página como H1 dinámico — positivo |
+| Popup Builder | No | Sí | Popups pueden inyectar contenido adicional en el DOM |
+| Forms | No (básico) | Sí | Formularios con eventos GTM/GA4 más fáciles de configurar |
+| WooCommerce Builder | No | Sí | Permite personalizar product pages — riesgo de alterar schema Product |
+| Loop Grid | No | Sí | Para listing pages dinámicas — verificar canonical en cada item |
+
+**Dynamic Tags — riesgo específico:**
+Elementor Pro permite usar Dynamic Tags para rellenar campos del builder con
+datos de WordPress (título del post, meta description, custom fields).
+
+Si se usa un Dynamic Tag para el H1 y este extrae el campo equivocado, el H1
+resultante puede no coincidir con el título configurado en Yoast/Rank Math.
+**Verificación:** WebFetch de la página y comparar H1 visible con el title tag.
+
+**Popup Builder:**
+Los popups de Elementor Pro se cargan en el DOM de la página aunque estén ocultos.
+Si el popup contiene texto con keywords relevantes, Google puede leer ese contenido
+y mezclar las señales de relevancia.
+
+---
+
 ### TranslatePress — Hreflang duplicado (MEDIO)
 
 **Síntoma:** El `<head>` contiene dos bloques de hreflang para las mismas URLs:

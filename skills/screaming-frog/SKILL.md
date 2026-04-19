@@ -279,6 +279,89 @@ sección visible, o cambiar las etiquetas de los widgets anteriores a `<div>` co
 
 ---
 
+## Custom extraction with XPath
+
+Screaming Frog's Custom Extraction feature allows extracting specific elements
+from the HTML of each crawled page using XPath or CSS selectors. Useful for
+bulk-extracting data that SF does not report natively.
+
+### Activating Custom Extraction
+
+Configuration > Custom > Extraction > Add
+
+Set a name, select XPath or CSS selector, and choose what to extract:
+- **Extract inner text:** the visible text content of the element
+- **Extract HTML:** the full HTML of the element
+- **Extract attribute:** a specific attribute value (href, content, src)
+
+### Useful XPath patterns for SEO
+
+**Schema JSON-LD — extract all schema types on a page:**
+```xpath
+//script[@type="application/ld+json"]
+```
+Extract: HTML — gives you the full JSON-LD content.
+Use: check what schema types are present on each URL. Export and review
+for missing Product schema, incorrect datePublished, etc.
+
+**Canonical URL:**
+```xpath
+//link[@rel="canonical"]/@href
+```
+Extract: attribute (href). Gives canonical URL for every page in the crawl.
+Use: build a canonical map, detect mismatches between URL and canonical.
+
+**robots meta content:**
+```xpath
+//meta[@name="robots"]/@content
+```
+Extract: attribute (content). Shows the exact robots directive on each page.
+Use: bulk-identify pages with noindex, nofollow, or other directives.
+
+**OG image URL:**
+```xpath
+//meta[@property="og:image"]/@content
+```
+Use: verify OG image is present and consistent across pages.
+
+**First H2 on the page:**
+```xpath
+(//h2)[1]
+```
+Extract: inner text. Useful for auditing heading structure in bulk.
+
+**Article published date:**
+```xpath
+//meta[@property="article:published_time"]/@content
+```
+Use: bulk-export publishing dates, cross-reference with lastmod in sitemap.
+
+**Price on product pages (WooCommerce):**
+```xpath
+//p[@class="price"]//bdi
+```
+Use: verify product prices are rendering correctly in Spider mode.
+
+**Word count approximation (body text only):**
+```xpath
+//article | //main | //*[@class="entry-content"]
+```
+Extract: inner text. Export character count as a proxy for content length.
+
+### Combining Custom Extraction with filters
+
+After crawling, go to the Custom Extraction tab and apply column filters:
+- Filter XPath result is empty → pages missing the element
+- Filter XPath result contains a specific string → pages with a particular value
+
+**Example workflow — find pages missing schema:**
+1. Add XPath: `//script[@type="application/ld+json"]` > Extract HTML
+2. Crawl site
+3. Custom Extraction tab > filter "Schema JSON-LD" is empty
+4. Export: these URLs have no schema markup at all
+
+---
+
 ## Configuración para re-crawl de verificación
 
 Después de implementar correcciones técnicas, crawl selectivo para confirmar:

@@ -267,6 +267,145 @@ Trigger fires on: Click URL - contains - tel: (o mailto:)
 
 ---
 
+## WooCommerce — Enhanced Ecommerce (GA4)
+
+GA4 Enhanced Ecommerce tracking via GTM requires pushing structured `items` arrays
+to the dataLayer on specific user actions. Native WooCommerce does not push these
+automatically — they require custom implementation.
+
+### Required events for GA4 Enhanced Ecommerce
+
+| Event | When to fire | Required parameters |
+|-------|-------------|---------------------|
+| `view_item_list` | Product listing pages | `items[]`, `item_list_name` |
+| `select_item` | Click on product in list | `items[]`, `item_list_name` |
+| `view_item` | Product detail page | `items[]` |
+| `add_to_cart` | Add to cart button | `items[]`, `currency`, `value` |
+| `remove_from_cart` | Remove from cart | `items[]`, `currency`, `value` |
+| `view_cart` | Cart page load | `items[]`, `currency`, `value` |
+| `begin_checkout` | Checkout start | `items[]`, `currency`, `value` |
+| `purchase` | Order confirmation page | `transaction_id`, `items[]`, `currency`, `value` |
+
+### dataLayer push structure
+
+```javascript
+// Example: add_to_cart
+dataLayer.push({
+  event: 'add_to_cart',
+  ecommerce: {
+    currency: 'EUR',
+    value: 29.99,
+    items: [{
+      item_id: 'SKU-123',
+      item_name: 'Product Name',
+      item_category: 'Category Name',
+      price: 29.99,
+      quantity: 1
+    }]
+  }
+});
+```
+
+**Important:** GA4 ecommerce events require the `ecommerce` object to be
+inside the dataLayer push, not as top-level keys.
+
+### Implementation options for WooCommerce
+
+**Option A — Plugin (recommended):**
+- "Pixel Your Site" Pro: full GA4 ecommerce dataLayer out of the box
+- "Duracelltomi Google Tag Manager for WordPress": includes WooCommerce ecommerce
+
+**Option B — Custom PHP:**
+```php
+// Enqueue a JS file that pushes to dataLayer on add-to-cart AJAX
+add_action('woocommerce_add_to_cart', function($cart_item_key, $product_id, $quantity) {
+    $product = wc_get_product($product_id);
+    // Build items array and output as inline JS
+    wc_enqueue_js("dataLayer.push({
+        event: 'add_to_cart',
+        ecommerce: {
+            currency: '" . get_woocommerce_currency() . "',
+            value: " . $product->get_price() . ",
+            items: [{ item_id: '" . $product->get_sku() . "',
+                       item_name: '" . esc_js($product->get_name()) . "',
+                       price: " . $product->get_price() . ",
+                       quantity: {$quantity} }]
+        }
+    });");
+}, 10, 3);
+```
+
+### `purchase` event on order confirmation
+
+The most critical ecommerce event. Common issues:
+
+1. **Fires on every page load** of the thank-you page, not just once.
+   Fix: store `transaction_id` in a cookie/session and check before pushing.
+
+2. **Fires in Preview Mode but not in production.**
+   Cause: Consent Mode blocking before purchase confirmation.
+   Fix: ensure purchase event fires even with `analytics_storage: denied`
+   (use Advanced Consent Mode so GA4 receives modelado data).
+
+3. **`transaction_id` is not unique** across orders.
+   Fix: use WooCommerce order ID, not a session variable.
+
+---
+
+## Consent Mode with WordPress GDPR plugins
+
+### Interaction with CMPs (GDPR plugins)
+
+Common GDPR plugins: Moove GDPR, CookieYes, Complianz, Real Cookie Banner.
+
+Each must push a `gtag('consent', 'update', {...})` call to the dataLayer
+when the user accepts or rejects. Without this update call, GA4 tags remain
+blocked indefinitely after the default `denied` state.
+
+**Verify the update is happening:**
+```javascript
+// In Chrome DevTools Console after accepting cookies:
+window.dataLayer.filter(item => item[0] === 'consent')
+// Should show at least two entries:
+// 1. default {analytics_storage: 'denied', ad_storage: 'denied'}
+// 2. update {analytics_storage: 'granted', ad_storage: 'granted'}
+```
+
+**Timing issue:** If the CMP's update call fires after the GA4 Configuration Tag,
+GA4 may have already initialized in `denied` state. Fix: verify the CMP fires
+the update before or immediately after the GTM initialization.
+
+**CookieYes + GTM:**
+CookieYes has native GTM integration — it fires a custom event `cookieyes-accept-all`
+that can be used as a trigger in GTM to update consent and fire tags.
+
+**Complianz + GTM:**
+Complianz can trigger GTM consent update via its `cmplz_after_analytics_consent` event.
+
+### Default consent state
+
+The `gtag('consent', 'default', {...})` call must appear in the HTML before the
+GTM container snippet. If it appears after, the default state is applied after
+GTM has already run.
+
+```html
+<!-- Correct order in <head> -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  // Default: deny all until user accepts
+  gtag('consent', 'default', {
+    'analytics_storage': 'denied',
+    'ad_storage': 'denied',
+    'wait_for_update': 500
+  });
+</script>
+<!-- GTM snippet AFTER the consent default -->
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-XXXXX"></script>
+```
+
+---
+
 ## Container Snippets — Verificación de instalación
 
 ### Verificar que GTM está cargando

@@ -4,10 +4,10 @@ Custom knowledge base for technical SEO audits. Each skill is a Markdown file
 that Claude Code loads automatically when the relevant topic is invoked.
 
 Built from real audit patterns across:
-- **CMS**: WordPress (Divi, Elementor), PrestaShop
+- **CMS**: WordPress (Divi, Elementor, WooCommerce), PrestaShop, Shopify
 - **Analytics & tracking**: GA4, Google Tag Manager
 - **SEO tools**: Screaming Frog, SE Ranking, Semrush
-- **Technical**: robots.txt, Core Web Vitals, schema, crawl budget
+- **Technical**: robots.txt, sitemap, Core Web Vitals, cache, images, SSL, schema, hreflang
 
 All knowledge is anonymized and GDPR compliant — no client data, no domains,
 no identifying information. The pattern matters, not the source.
@@ -209,7 +209,88 @@ Hreflang implementation and auditing for multilingual or multi-regional WordPres
 - **Hreflang Manager Lite** — global mode risk with partial translation: generates massive broken reciprocity
 - **Common errors** — broken reciprocity, URLs with 404/redirect, incorrect language code, missing x-default, duplicate hreflang
 - **Validation** — Screaming Frog Hreflang tab (noreturn, incorrect code, non-canonical), GSC > International, manual JS verification snippet
+- **Single-language multi-region** — es-ES / es-MX / es-AR structure, x-default placement, canonical per region, WordPress implementation options
 - Checklist by criticality (critical / high / medium / low)
+
+---
+
+### Performance — Core Web Vitals
+
+**File:** `skills/core-web-vitals/SKILL.md`
+
+LCP, CLS, INP, and TTFB diagnosis and optimization across CMS platforms.
+
+- **Field vs lab data** — CrUX vs Lighthouse, when each is authoritative, minimum traffic threshold for CrUX data
+- **LCP diagnostic tree** — LCP element identification, lazy-loaded hero image, fetchpriority placement, preload hints, format and file size
+- **CLS causes and fixes** — missing image dimensions, web font FOUT, dynamic content injection, Elementor lazy background shift, cookie banners
+- **INP** — long tasks, third-party script competition, DOM size, forced reflows. Replaced FID in March 2024
+- **TTFB** — relationship to LCP, OPcache, page cache, CDN for HTML
+- **CMS-specific** — Divi (inline CSS, background hero), Elementor (lazy LCP, WP Rocket conflict, DOM size), PrestaShop (Cache-Control: no-store, CCC), Shopify (app scripts)
+- Measurement tools (PSI, CrUX, DevTools, WebPageTest) and audit checklist
+
+---
+
+### Performance — Cache Headers
+
+**File:** `skills/cache-headers/SKILL.md`
+
+Cache-Control strategy, CDN configuration, and CMS-specific caching setup.
+
+- **Cache-Control directives** — `max-age`, `s-maxage`, `no-cache`, `no-store`, `immutable`, `stale-while-revalidate` with use cases per content type
+- **Cache layers architecture** — browser cache → CDN → reverse proxy → page cache → object cache → OPcache → database
+- **ETag and Last-Modified** — validation mechanics, Googlebot crawl budget impact, multi-server inode ETag problem
+- **WordPress** — WP Rocket (cache exclusions for WooCommerce), LiteSpeed Cache (X-Robots-Tag bug on XML), Redis object cache
+- **PrestaShop** — CCC options table, Smarty cache, Varnish and full-page cache options
+- **Nginx** — FastCGI page cache snippet, static asset cache headers, cache bypass for logged-in users
+- **CDN** — what CDNs cache by default (assets yes, HTML no), Cloudflare "Cache Everything" rule, cache invalidation strategies
+- Diagnosing cache issues with curl and response headers
+
+---
+
+### Performance — Image Optimization
+
+**File:** `skills/image-optimization/SKILL.md`
+
+Format selection, responsive images, LCP handling, and CMS-specific optimization.
+
+- **Format selection** — WebP vs AVIF vs JPEG/PNG comparison, file size targets by image type
+- **Responsive images** — `srcset`, `sizes` attribute explanation, what happens when `sizes` is missing
+- **LCP images** — never lazy-load, `fetchpriority="high"`, `<link rel="preload">` in `<head>`, only one `fetchpriority` per page
+- **Lazy loading** — when to use and when not to. Elementor and WP Rocket lazy-loading paradox on hero images
+- **alt text** — content vs decorative images, keyword-stuffing pitfalls, WooCommerce product alt
+- **CLS prevention** — explicit `width` + `height`, `aspect-ratio` CSS alternative
+- **CSS background-image vs `<img>`** — preload scanner visibility, when each is appropriate
+- **CMS specifics** — WordPress (ShortPixel, Smush, attachment page noindex), PrestaShop (thumbnail regeneration), WooCommerce gallery
+
+---
+
+### Security — SSL/HTTPS
+
+**File:** `skills/ssl-https/SKILL.md`
+
+Certificate management, mixed content, HTTPS migration, and security headers.
+
+- **Certificate types** — DV, OV, EV, wildcard, SAN. Let's Encrypt auto-renewal
+- **HTTPS redirect** — correct single-hop chain, redirect loops, WordPress and Nginx configuration
+- **Mixed content** — active (blocked) vs passive (warning), detection via DevTools and Screaming Frog, WordPress database search-replace, PrestaShop `ps_configuration` table
+- **HSTS** — directives, preload list requirements, risks of `includeSubDomains` with non-HTTPS subdomains
+- **Security headers** — HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, X-Powered-By removal
+- **HTTPS migration checklist** — pre-migration, redirects, mixed content, WordPress config, GSC, monitoring
+
+---
+
+### Performance — Third-Party Scripts
+
+**File:** `skills/third-party-scripts/SKILL.md`
+
+Script loading strategies, CWV impact by vendor, GTM optimization, and script auditing.
+
+- **Loading strategies** — `async` vs `defer` vs blocking, dynamic import for interaction-triggered scripts
+- **CWV impact by vendor** — analytics (GA4, Matomo), advertising (Meta Pixel, Hotjar, Clarity), chat widgets, fonts (Google Fonts self-hosting), maps (facade pattern), video embeds
+- **Facade pattern** — lazy-load maps and YouTube players on user interaction
+- **GTM tag audit** — identifying unused tags, trigger optimization (DOM Ready vs Window Loaded), tag sequencing
+- **Auditing third-party footprint** — Chrome DevTools Coverage tab, PSI "Reduce third-party code", Screaming Frog source code extraction
+- Audit checklist by impact level
 
 ---
 

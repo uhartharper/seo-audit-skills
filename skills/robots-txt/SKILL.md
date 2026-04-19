@@ -476,6 +476,69 @@ BAJO (limpieza y mantenimiento)
 
 ---
 
+## Disallow vs meta robots — Conflict resolution
+
+A common confusion: what happens when robots.txt says `Disallow` for a URL
+but the page itself has `<meta name="robots" content="index">`?
+
+### Rule: robots.txt blocks crawling; meta robots controls indexing
+
+They operate at different levels:
+
+| Directive | Controls | Evaluated by |
+|-----------|----------|-------------|
+| robots.txt `Disallow` | Whether Googlebot crawls the URL | Googlebot before requesting the URL |
+| `<meta name="robots" content="noindex">` | Whether Google indexes the URL | Google after crawling the page |
+| `X-Robots-Tag: noindex` | Whether Google indexes the URL | Google after crawling the page |
+
+### What wins — decision tree
+
+```
+Is the URL blocked by robots.txt Disallow?
+  YES → Google cannot crawl it. Google cannot read the page's meta robots.
+        The URL can still be indexed if Google discovers it from external links
+        (it will be indexed without a snippet — "information unavailable").
+  NO  → Google crawls it. Then reads meta robots:
+        noindex in meta robots → Google removes it from the index.
+        index in meta robots (or no meta robots) → Google can index it.
+```
+
+### The dangerous combination: Disallow + noindex
+
+A URL with `Disallow` in robots.txt AND `<meta name="robots" content="noindex">`
+creates a conflict:
+
+- Googlebot cannot crawl the page → cannot read the noindex directive
+- If the URL is linked externally, Google may index it without a snippet
+- The noindex is never executed because Googlebot never sees it
+
+**Fix:** Choose one approach:
+- **To keep URL out of index but allow crawling:** Remove the Disallow, keep the noindex
+- **To prevent crawling entirely:** Keep the Disallow, remove the noindex (redundant)
+- **Most common correct approach:** `noindex` in meta robots, no Disallow
+
+### Practical implications
+
+**WordPress wp-admin:**
+`Disallow: /wp-admin/` is correct. The admin area should not be crawled OR indexed.
+The noindex on wp-admin pages is irrelevant because Disallow prevents crawl.
+
+**Search results pages (`/?s=`):**
+`Disallow: /?s=` prevents Googlebot from crawling search results (correct — duplicate content).
+Alternative approach: allow crawling but add `<meta name="robots" content="noindex,follow">`.
+Both work. Disallow is simpler and prevents server load from Googlebot.
+
+**Checkout and transactional pages:**
+Use `Disallow` for checkout/cart — no SEO value AND prevents accidental indexation
+even if someone forgets to set noindex. Defense in depth.
+
+**Pages you want indexed:**
+Never use `Disallow` on pages you want in Google's index.
+If the URL is Disallowed and external links point to it, Google will index the URL
+as a title-less, snippet-less result — undesirable.
+
+---
+
 ## WordPress — Cómo editar robots.txt
 
 WordPress genera robots.txt **virtualmente** (sin archivo físico) desde la raíz.

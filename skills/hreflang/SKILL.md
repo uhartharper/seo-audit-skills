@@ -209,6 +209,90 @@ coincide con el idioma/región del usuario.
 
 ---
 
+## Single-language, multi-region sites
+
+A single-language site targeting multiple regions of the same language
+(e.g., Spanish for Spain, Mexico, Argentina) needs hreflang region variants.
+
+### When to use region-specific hreflang
+
+Use `hreflang="es-ES"`, `hreflang="es-MX"`, `hreflang="es-AR"` when:
+- Content differs meaningfully between regions (pricing, products, local references)
+- You want Google to show the Spain version to Spanish users and the Mexico version
+  to Mexican users
+- Each region has distinct URLs
+
+Do NOT use region-specific hreflang when:
+- The same content serves all Spanish speakers (use `hreflang="es"` instead)
+- You only have one URL and want it shown globally
+
+### Structure for a single-language, multi-region site
+
+```html
+<!-- On the Spain page (/es-es/servicio/) -->
+<link rel="alternate" hreflang="es-ES" href="https://dominio.com/es-es/servicio/" />
+<link rel="alternate" hreflang="es-MX" href="https://dominio.com/es-mx/servicio/" />
+<link rel="alternate" hreflang="es-AR" href="https://dominio.com/es-ar/servicio/" />
+<link rel="alternate" hreflang="x-default" href="https://dominio.com/servicio/" />
+```
+
+**`x-default`** in a multi-region setup: should point to the generic version
+(no region qualifier) or to the most important market. It serves users from
+regions not explicitly targeted (e.g., Peru, Colombia, Chile).
+
+### Common mistake: using `hreflang="es"` alone on a multi-region site
+
+If you have separate pages for es-ES, es-MX, and es-AR but declare them all as
+`hreflang="es"`, Google sees them as the same language target and does not know
+which to show per region. All pages compete for the same signal.
+
+```html
+<!-- Wrong: ambiguous, all three claim the same language tag -->
+<link rel="alternate" hreflang="es" href="https://dominio.com/es-es/servicio/" />
+<link rel="alternate" hreflang="es" href="https://dominio.com/es-mx/servicio/" />
+<link rel="alternate" hreflang="es" href="https://dominio.com/es-ar/servicio/" />
+```
+
+### URL structure options for multi-region
+
+| Structure | Example | Notes |
+|-----------|---------|-------|
+| Subdirectory | `dominio.com/es-mx/producto/` | Easiest to implement, shares domain authority |
+| Subdomain | `mx.dominio.com/producto/` | Separate GSC property needed per subdomain |
+| ccTLD | `dominio.mx/producto/` | Strongest regional signal, requires separate hosting/budget |
+
+For most SEO clients, **subdirectory** is the recommended approach: lower cost,
+shares the main domain's authority, easier to manage in one CMS.
+
+### Canonical in a multi-region setup
+
+Each regional URL should have a self-referencing canonical:
+
+```html
+<!-- On https://dominio.com/es-mx/servicio/ -->
+<link rel="canonical" href="https://dominio.com/es-mx/servicio/" />
+```
+
+Do NOT have the Mexico page canonical pointing to the Spain page. This would
+tell Google to index only the Spain page and ignore the Mexico version.
+
+### Implementation in WordPress for multi-region
+
+**Option A — Separate WordPress installations per region:**
+- Each region is a separate WP install in a subdirectory
+- Each manages its own canonical and meta robots
+- Use Yoast with the PHP fix for `@id` alignment (see hreflang skill section)
+
+**Option B — WPML with per-language domains or subdirectories:**
+- WPML handles hreflang automatically
+- Configure language domains or subdirectory per region
+
+**Option C — Manual with HFCM:**
+- For sites with a small set of pages, add hreflang manually per page via HFCM
+- Safest approach for partial multi-region coverage
+
+---
+
 ## Validación
 
 ### Screaming Frog — Hreflang Audit
