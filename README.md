@@ -1,9 +1,13 @@
 # SEO Skills for Claude Code
 
-Custom knowledge base for technical SEO audits. Each skill is a Markdown file
-that Claude Code loads automatically when the relevant topic is invoked.
+A knowledge base of 17 skills for technical SEO audits with Claude Code.
+Each skill encodes real-world patterns: documented CMS bugs, fix-ready code
+snippets, audit checklists, and edge cases that generic AI training data misses.
 
-Built from real audit patterns across:
+Covers the full audit stack — CMS mechanics, Core Web Vitals, schema markup,
+cache architecture, hreflang, third-party script management, and the tools
+SEOs actually use.
+
 - **CMS**: WordPress (Divi, Elementor, WooCommerce), PrestaShop, Shopify
 - **Analytics & tracking**: GA4, Google Tag Manager
 - **SEO tools**: Screaming Frog, SE Ranking, Semrush
