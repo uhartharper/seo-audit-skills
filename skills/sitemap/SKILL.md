@@ -404,6 +404,71 @@ These URL patterns should never appear in a sitemap:
 - Enable lastmod: Titles & Meta > Posts > Advanced > Use Modified Date
 - Disable post types: Rank Math > Sitemap > Post Types
 
+### WordPress + WooCommerce
+
+WooCommerce adds post types (`product`, `product_variation`) and taxonomies
+(`product_cat`, `product_tag`) that require specific sitemap decisions.
+
+**`/my-account/` in the sitemap**
+
+One of the most common WooCommerce sitemap errors. The My Account page is
+personalized per user and has no indexable value — yet SEO plugins often include
+it because it is a standard WordPress page.
+
+- Yoast: set the My Account page to noindex via the page editor meta box, then
+  regenerate the sitemap. Yoast excludes noindex pages automatically.
+- Rank Math: same — noindex the page directly, then regenerate.
+
+**Product variations**
+
+WooCommerce creates a post for each variation (`product_variation` post type).
+These are not publicly accessible URLs — they return 404 if visited directly.
+Some sitemap configurations accidentally include them.
+
+Fix: Yoast > XML Sitemaps > verify `product_variation` is disabled.
+Rank Math > Sitemap > Post Types > disable Product Variation.
+
+**Out-of-stock and discontinued products**
+
+Products set to "Draft" or with stock status "Out of stock" may remain in the sitemap
+after the product is discontinued. If the product page returns 404 or redirects,
+it should be removed from the sitemap.
+
+Pattern to detect: sampling returns 404 or redirect on product URLs.
+Fix: in WooCommerce, set discontinued products to "Draft" or delete them and add a
+proper 301 redirect to a relevant category page.
+
+**Product tag archives**
+
+`product_tag` archives are typically thin content (a filtered list of products by tag,
+with no editorial content). Equivalent to the author archive problem.
+
+Fix: Yoast > Search Appearance > Taxonomies > Product Tags > No index.
+Rank Math > Titles & Meta > Product Tags > No index.
+Exclude from sitemap after setting to noindex.
+
+**WooCommerce endpoint pages**
+
+WooCommerce generates virtual endpoint URLs appended to the My Account page:
+`/my-account/orders/`, `/my-account/downloads/`, `/my-account/edit-account/`, etc.
+These should never be in the sitemap — they require user authentication.
+
+These endpoints are not standard WordPress pages so they are less likely to appear
+in the sitemap, but verify if the site uses a custom page structure.
+
+**`/shop/` page**
+
+The main shop page (`/shop/` or localized equivalent) is generally worth indexing.
+However, paginated versions (`/shop/page/2/`, `/shop/page/3/`) are low-value and
+should be excluded from the sitemap (set to noindex via SEO plugin).
+
+**WooCommerce REST API and AJAX endpoints**
+
+`/wc-api/`, `/wp-json/wc/` endpoints should never appear in a sitemap.
+If detected, the sitemap is likely including URLs from a crawl-based generator
+rather than from the WooCommerce post type registry. Switch to the native
+Yoast or Rank Math sitemap generator.
+
 ### PrestaShop
 
 - Default sitemap path: `/1_index_sitemap.xml` — the path `/sitemap.xml` does not exist
@@ -445,6 +510,9 @@ HIGH (crawl budget waste or indexation loss)
 [ ] No www / non-www inconsistency
 [ ] No UTM or tracking parameters in sitemap URLs
 [ ] No internal / transactional URLs (cart, checkout, admin, search)
+[ ] WooCommerce: /my-account/ not in sitemap
+[ ] WooCommerce: product_variation post type excluded from sitemap
+[ ] WooCommerce: product_tag archives noindex and excluded from sitemap
 [ ] No lastmod 1970-01-01 (Rank Math bug)
 [ ] Sampling: no broken URLs (404, error)
 [ ] Sampling: no noindex URLs in sitemap

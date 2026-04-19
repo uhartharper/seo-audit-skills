@@ -190,7 +190,7 @@ Technical audit knowledge for XML sitemaps, covering discovery, structural valid
 - **URL quality** — HTTP/HTTPS mixing, www/non-www inconsistency, trailing slash inconsistency, uppercase paths, UTM/tracking parameters, staging URLs, cross-domain URLs, robots.txt Disallow conflicts
 - **lastmod integrity** — presence rate, `1970-01-01` Rank Math bug, invalid format, future dates, all-identical dates (static generation), all very old dates
 - **Sampling** — live checks for broken URLs, redirects (>20%), noindex pages in sitemap, canonical mismatch, slow response times (crawl budget impact)
-- **CMS patterns** — WordPress/Yoast, WordPress/Rank Math (documented bugs), PrestaShop default path, Shopify limitations, Magento
+- **CMS patterns** — WordPress/Yoast, WordPress/Rank Math (documented bugs), WordPress/WooCommerce (`/my-account/`, product variations, out-of-stock, product tags, endpoints), PrestaShop default path, Shopify limitations, Magento
 - Audit checklist by criticality (critical / high / medium / low) + common positives
 
 ---
