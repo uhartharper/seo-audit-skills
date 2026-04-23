@@ -295,6 +295,27 @@ Only use AggregateRating if the reviews are visible to users.
 
 ---
 
+## Claims verification before publishing schema
+
+Any specific claim included in schema markup must be verified on the live site
+before writing it. This applies to:
+
+- `ratingValue` and `reviewCount` in AggregateRating — verify the actual score and count visible on the page
+- `price` and `priceValidUntil` in Offer — verify the current price in the product/service page
+- `openingHours` in LocalBusiness — verify against the actual hours shown on the site
+- `telephone` and `address` — verify they match what is displayed publicly
+- `description` claims ("guaranteed", "certified", "free") — verify they appear in the visible content
+
+**Process:**
+1. WebFetch the affected URL before finalizing the schema
+2. Confirm the value matches what is visible to users
+3. If not visible: use a generic verified value or remove the field
+
+A schema that passes validator.schema.org but contains unverified claims is still
+incorrect — validation tools check structure, not factual accuracy.
+
+---
+
 ## Documented bugs and common errors
 
 ### datePublished = "1970-01-01" (Rank Math bug)

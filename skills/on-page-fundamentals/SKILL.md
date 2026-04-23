@@ -279,6 +279,63 @@ CTR bajo para identificar casos donde el title es el problema.
 
 ---
 
+## Verificación de claims antes de publicar
+
+Cualquier afirmación específica en un title tag, meta description o H1 debe estar
+verificada en el sitio real antes de escribirla. Esto incluye:
+
+- Plazos de entrega o respuesta ("en 24h", "en 48h", "respuesta inmediata")
+- Precios ("desde X€", "precio especial")
+- Atributos de servicio ("gratis", "garantizado", "certificado", "sin compromiso")
+- Años de experiencia ("20 años de experiencia")
+- Valoraciones o número de reseñas ("4.9 estrellas", "más de 500 reseñas")
+- Horarios de atención
+
+**Proceso obligatorio antes de incluir cualquier claim:**
+1. WebFetch de la URL afectada (o homepage si es claim general del negocio)
+2. Confirmar que el texto exacto o equivalente aparece visible en la página
+3. Si no aparece: usar un claim genérico verificable ("Llámenos", "Solicite información") o eliminarlo
+
+No existe excepción por "es estándar del sector" o "es obvio que lo tienen".
+Si no está en el sitio, no va en el documento.
+
+---
+
+## Ficha SEO — estructura obligatoria para artículos
+
+Todo artículo de blog, página de servicio o página de tratamiento debe incluir
+una ficha SEO con los siguientes elementos, en este orden:
+
+**1. Metadatos básicos**
+- Slug (kebab-case, sin tildes, sin caracteres especiales)
+- Meta title (50-60 caracteres, keyword en primeras palabras)
+- Meta description (140-155 caracteres, keyword natural, CTA implícito)
+- Keyword primaria
+- Keywords secundarias (3-5)
+
+**2. Imágenes**
+- Mínimo 2 imágenes por artículo
+- Alt text: keyword + localización o marca (ej. "fisioterapia deportiva madrid clínica ejemplo")
+- Nombre de archivo: kebab-case sin tildes (ej. `fisioterapia-deportiva-madrid.webp`)
+- Formato: .webp
+- Tamaño máximo: 100 KB por imagen
+
+**3. Análisis keyword research — DataForSEO**
+- Tabla con volumen mensual, dificultad, CPC, intent
+- Histórico mensual de los últimos 12 meses
+- Decisión: incluir / descartar / usar como secundaria
+
+**4. Análisis keyword research — SE Ranking**
+- Tabla con posición actual del sitio para cada keyword
+- Ajustes respecto al análisis de DataForSEO (discrepancias de volumen, keywords que SE Ranking detecta y DataForSEO no)
+
+**5. Schema FAQ JSON-LD**
+- Mínimo 3 pares pregunta-respuesta
+- Preguntas alineadas con las PAA del SERP o las búsquedas relacionadas
+- Ver skill `schema-markup` para implementación
+
+---
+
 ## Checklist de auditoría on-page
 
 ```

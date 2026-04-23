@@ -125,6 +125,25 @@ SE Ranking usa datos de Google Ads Keyword Planner como fuente. Semrush también
 
 Para decisiones importantes, cruzar con Google Ads Keyword Planner directamente o con la skill `google-tag-manager` > sección keywords (Tier 3).
 
+### Validación cruzada con Google Trends cuando el volumen es <10
+
+Google Ads API agrupa variantes cercanas bajo la keyword principal y devuelve <10
+para términos secundarios que sí tienen búsquedas reales. SE Ranking hereda esta
+limitación cuando usa Google Ads como fuente.
+
+**Cuándo aplicar:** si SE Ranking muestra <10 búsquedas para una keyword que
+intuitivamente debería tener volumen (sinónimos populares, nombres coloquiales de
+condiciones médicas, términos de negocio conocidos):
+
+1. Consultar Google Trends para esa keyword en España, últimos 12 meses
+2. Si Trends muestra actividad constante → reportar como "volumen no medible via
+   Keyword Planner pero con búsquedas confirmadas vía Trends — incluir como sinónimo
+   prioritario"
+3. Si Trends no muestra actividad → confirmar descarte
+
+**Nota:** Semrush usa clickstream y modelos propios que sí capturan estas variantes —
+si Semrush muestra volumen pero SE Ranking muestra <10, Google Trends es el árbitro.
+
 ---
 
 ## Competitor Analysis

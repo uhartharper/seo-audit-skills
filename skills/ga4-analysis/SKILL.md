@@ -143,7 +143,42 @@ Una sesión con un único pageview y 15 segundos = sesión engaged (>10s). UA la
 4. Cruzar con Google Search Console:
    - GSC muestra impresiones + clics reales de Google. Si bajan en paralelo → problema de visibilidad.
    - Si GA4 baja pero GSC no → problema de tracking (GTM, Consent Mode).
-5. Cruzar con fechas de Google Algorithm Updates (ver instrucciones en CLAUDE.md).
+5. Cruzar con fechas de Google Algorithm Updates (ver sección abajo).
+
+---
+
+## Google Algorithm Updates — cruce con caídas de tráfico
+
+Cuando GA4 muestra una caída de tráfico orgánico, siempre cruzar las fechas
+con el historial de updates de Google antes de concluir una causa.
+
+### Tipos de update a verificar
+
+| Update | Qué afecta | Señal típica |
+|--------|-----------|--------------|
+| Core Update | Ranking general de todo el sitio | Caída amplia en múltiples páginas simultáneamente |
+| Helpful Content Update | Contenido creado principalmente para buscadores | Caída en artículos de blog con poco E-E-A-T |
+| Spam Update | Backlinks manipuladores, cloaking, thin content | Caída brusca + desaparición de keywords |
+| Reviews Update | Páginas de reseñas y afiliados | Caída en páginas comparativas / de producto |
+| Page Experience | Core Web Vitals, mobile, HTTPS | Caída gradual correlacionada con métricas de velocidad |
+
+### Protocolo
+
+1. Identificar la fecha exacta de inicio de la caída en GA4 (usar comparativa día a día)
+2. WebSearch para obtener el calendario actualizado de Google Updates si los datos son recientes
+3. Verificar si hay un update en una ventana de ±7 días respecto al inicio de la caída
+4. Si hay solapamiento → señalarlo como **hipótesis a validar**, no como causa confirmada
+5. Buscar evidencia adicional: ¿los competidores también cayeron? ¿El contenido afectado tiene señales de thin content o E-E-A-T débil?
+
+**Fuentes para el historial de updates:**
+- Google Search Status Dashboard: https://status.search.google.com/products/rGHU1u87FJnkbvfe/history
+- Search Engine Roundtable: cubre updates no confirmados y comunidad de SEOs
+
+### Cómo reportar
+
+- Caída coincide con Core Update confirmado → "La caída del [fecha] coincide con el Core Update de [mes]. Hipótesis: el sitio fue afectado por los cambios en criterios de calidad de contenido. Requiere análisis de E-E-A-T en las páginas afectadas."
+- Caída sin update conocido → "No hay update de Google en el período. Investigar causas técnicas: cambios en el sitio, pérdida de backlinks, problemas de indexación."
+- Caída previa a un update → No atribuir al update aunque sea temporal.
 
 ---
 
