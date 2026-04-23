@@ -38,7 +38,7 @@ SE Ranking es la fuente principal de:
 ### Antes de actuar sobre una caída
 
 1. Confirmar en GSC que las impresiones también cayeron (si GSC muestra impresiones estables pero SE Ranking baja → posible error de medición o SERP feature desplazando posición sin pérdida de visibilidad real).
-2. Cruzar con historial de Google Updates (CLAUDE.md: siempre cruzar caídas con updates).
+2. Cruzar con historial de Google Updates (ver skill `ga4-analysis` > sección Google Algorithm Updates).
 3. Verificar que la URL sigue indexada: GSC URL Inspection o `site:dominio.com/url`.
 4. Comprobar si el competidor que ocupó la posición es nuevo o si subió un resultado existente.
 
@@ -157,7 +157,7 @@ Filtros útiles:
 - Volumen: > umbral mínimo según el nicho
 - Dificultad: ajustar según autoridad del cliente
 
-**Antes de proponer contenido nuevo:** verificar post-sitemap.xml del cliente (regla de CLAUDE.md — canibalización).
+**Antes de proponer contenido nuevo:** verificar post-sitemap.xml del cliente para descartar canibalización de intent.
 
 ### Share of Voice
 

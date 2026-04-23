@@ -23,7 +23,7 @@ Screaming Frog es la fuente principal de:
 
 **Limitación fundamental:** En modo Spider (sin JS rendering), no ejecuta JavaScript. Todo lo que un CMS genera dinámicamente (títulos via JS, contenido de SPA, lazy load) no será visible. Ver sección Modos de Crawl.
 
-**Regla de CLAUDE.md:** Los datos de SF son señales, no conclusiones. Validar issues con WebFetch antes de confirmar, especialmente en sitios con Divi, Elementor o cualquier constructor de páginas con JS.
+**Regla fundamental:** Los datos de SF son señales, no conclusiones. Validar issues con WebFetch antes de confirmar, especialmente en sitios con Divi, Elementor o cualquier constructor de páginas con JS.
 
 ---
 

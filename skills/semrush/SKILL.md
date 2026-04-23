@@ -67,7 +67,7 @@ Ruta: Semrush > Keyword Gap > introducir dominio cliente + dominios competidores
 
 1. Exportar "Missing" filtrado por volumen > X (ajustar según nicho) y KD < 50.
 2. Agrupar por intent con la columna "Intent" de Semrush.
-3. Verificar canibalización en sitemap del cliente antes de proponer (CLAUDE.md).
+3. Verificar post-sitemap.xml del cliente para descartar canibalización de intent antes de proponer contenido nuevo.
 4. Priorizar los que tienen intent Transaccional o Comercial si el cliente busca conversiones.
 
 ### Intents en Semrush
