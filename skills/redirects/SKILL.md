@@ -297,6 +297,52 @@ Configuration > Spider > Crawl linked XML sitemaps + Follow Internal Redirects: 
 
 ---
 
+## Diagnostic commands — redirects y canonicals
+
+### Verificar status, redirect destino y canonical de una URL
+
+```bash
+curl -s https://example.com/url-a-verificar -I | grep -E "(HTTP/|Location|Canonical)"
+```
+
+Output esperado para URL canónica limpia:
+```
+HTTP/2 200
+```
+
+Output con redirect:
+```
+HTTP/1.1 301 Moved Permanently
+Location: https://example.com/url-destino/
+```
+
+### Seguir toda la cadena de redirects
+
+```bash
+curl -I -L --max-redirs 5 https://example.com/url-problemática/
+```
+
+Muestra cada salto de la cadena. Más de 2 saltos = cadena a limpiar.
+
+### Batch: verificar status de una lista de URLs
+
+```bash
+while IFS= read -r url; do
+  echo "$url → $(curl -s -o /dev/null -w "%{http_code} %{redirect_url}" "$url")"
+done < urls_origen.txt
+```
+
+Genera una línea por URL con su código HTTP y la URL destino del redirect (si aplica).
+Útil en migraciones para validar que el mapeo está implementado correctamente.
+
+### Verificar si una URL redirigida aparece en el sitemap
+
+```bash
+curl -s https://example.com/page-sitemap.xml | grep -i "url-redirigida"
+```
+
+---
+
 ## Checklist de auditoría de redirects
 
 ```

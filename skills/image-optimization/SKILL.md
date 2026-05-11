@@ -313,6 +313,89 @@ interacts with the gallery. The main product image should be `loading="eager"`.
 
 ---
 
+## Diagnostic commands — live site image audit
+
+### Detect oversized images (>200 KB) on any URL
+
+```bash
+curl -s https://example.com/ \
+  | grep -oE 'https?://[^"]+\.(jpg|jpeg|png|webp|gif)' \
+  | xargs -I {} curl -s -o /dev/null -w "%{size_download} %{url_effective}\n" {} \
+  | awk '$1 > 204800 {printf "%.2f KB - %s\n", $1/1024, $2}' \
+  | sort -nr
+```
+
+**What it does:** Fetches the HTML of a URL, extracts all image URLs, measures each
+image's actual download size, and lists those exceeding 200 KB sorted by size descending.
+
+**Variants:**
+
+```bash
+# Lower threshold — flag images > 100 KB (recommended for LCP candidates)
+awk '$1 > 102400 {printf "%.2f KB - %s\n", $1/1024, $2}'
+
+# All images regardless of size (full inventory)
+awk '{printf "%.2f KB - %s\n", $1/1024, $2}' | sort -nr
+
+# Save to file for reporting
+| tee ~/claude-seo/client/image-audit-$(date +%Y%m%d).txt
+```
+
+**Limitations:**
+- Only catches images referenced in raw HTML (no JavaScript-injected images)
+- Does not follow srcset or picture sources — audits the default src only
+- For JS-rendered pages, combine with a PageSpeed Insights audit or Screaming Frog
+
+---
+
+## Alt text generation — vision workflow
+
+When a site has missing or generic alt text, use Claude's vision capability to
+analyze the actual image and generate contextually correct alt text.
+
+### Workflow
+
+1. Collect image URLs (from the diagnostic command above or from crawl data)
+2. For each image, fetch and analyze visually:
+   - Identify the main subject (person, product, action, location)
+   - Check surrounding page context (H1, page topic, business type)
+   - Apply keyword + localization/brand where natural
+3. Output format per image:
+
+```
+URL: https://example.com/images/foto1.jpg
+Alt propuesto: [descripción natural con keyword y localización si aplica]
+Nombre de archivo sugerido: keyword-descripcion-ciudad.webp
+Observaciones: [si hay problema de relevancia, duplicado, o imagen decorativa]
+```
+
+### Alt text rules (applied during generation)
+
+- Content images: descriptive alt required — never empty, never keyword-stuffed
+- Include primary keyword naturally where it fits the visual content
+- Add localization or brand when the image shows a location, team, or branded element
+- Decorative images (separators, abstract backgrounds): `alt=""` — no text
+- Logos: `alt="Nombre de empresa logo"`
+- Max ~125 characters (screen reader limit)
+
+### Filename rules (applied when renaming is possible)
+
+- kebab-case, no accents, no spaces: `limpieza-cristales-madrid.webp`
+- Descriptive, not generic: `foto1.jpg` → `equipo-fisioterapia-barcelona.webp`
+- Format: `.webp`, max 100 KB
+
+### Example output
+
+```
+URL: https://clinica.es/wp-content/uploads/equipo.jpg
+Análisis visual: foto grupal de 4 profesionales con batas blancas en consulta
+Contexto página: clínica de fisioterapia en Valencia
+Alt propuesto: Equipo de fisioterapeutas de la clínica en Valencia
+Nombre sugerido: equipo-fisioterapeutas-valencia.webp
+```
+
+---
+
 ## Audit checklist
 
 ```

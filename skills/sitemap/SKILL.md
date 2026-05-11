@@ -492,6 +492,47 @@ Yoast or Rank Math sitemap generator.
 
 ---
 
+## Diagnostic commands — sitemap live
+
+### Verificar accesibilidad y status HTTP
+
+```bash
+curl -s -I https://example.com/sitemap.xml | head -5
+```
+
+Resultado esperado: `HTTP/2 200` y `Content-Type: application/xml` o `text/xml`.
+Si devuelve 301 → hay redirect innecesario (Yoast genera esto a veces hacia el índice).
+Si devuelve 404 → el sitemap no existe en esa ruta — verificar robots.txt para la ruta real.
+
+### Contar URLs en un sitemap
+
+```bash
+# Total de <loc> en un sitemap o sitemap index
+curl -s https://example.com/sitemap.xml | grep -c "<loc>https"
+
+# Por sub-sitemap
+curl -s https://example.com/post-sitemap.xml | grep -c "<loc>https"
+curl -s https://example.com/page-sitemap.xml | grep -c "<loc>https"
+```
+
+### Verificar si una URL específica está en el sitemap
+
+```bash
+# Buscar si una slug o URL concreta aparece en el sitemap
+curl -s https://example.com/page-sitemap.xml | grep -i "nombre-del-slug"
+```
+
+Útil para confirmar si una página noindex fue eliminada correctamente del sitemap,
+o para verificar que una URL nueva ya aparece después de un ping/regeneración.
+
+### Verificar que el sitemap está declarado en robots.txt
+
+```bash
+curl -s https://example.com/robots.txt | grep -i "sitemap"
+```
+
+---
+
 ## Audit checklist
 
 ```

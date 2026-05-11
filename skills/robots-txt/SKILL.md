@@ -325,7 +325,7 @@ Sitemap: https://dominio.com/sitemap_index.xml
 | User-agent | Empresa | Uso |
 |------------|---------|-----|
 | `GPTBot` | OpenAI | Entrenamiento de modelos |
-| `Google-Extended` | Google | Entrenamiento de Gemini / Bard |
+| `Google-Extended` | Google | Entrenamiento de Gemini exclusivamente. Bloquearlo NO afecta ranking ni inclusión en Google Search (documentación oficial Google). |
 | `CCBot` | Common Crawl | Dataset público de entrenamiento |
 | `anthropic-ai` | Anthropic | Entrenamiento (crawler masivo) |
 | `ClaudeBot` | Anthropic | Entrenamiento (alias anterior) |
@@ -349,6 +349,20 @@ La forma correcta es no declararlos — caen en `User-agent: *` y respetan todas
 
 **Nota:** `GPTBot` (entrenamiento) y `ChatGPT-User` (búsqueda) son bots distintos.
 Bloquear `GPTBot` no afecta a las respuestas de ChatGPT a usuarios.
+
+### Bots user-triggered — fuera del alcance de robots.txt
+
+| User-agent | Empresa | Uso |
+|------------|---------|-----|
+| `Google-Agent` | Google | Navegación web en nombre de un usuario humano (Project Mariner y agentes similares) |
+
+**Google-Agent ignora robots.txt por diseño.** Al ser user-triggered (el humano solicita explícitamente la acción), Google lo excluye del protocolo robots.txt. No existe mecanismo para bloquearlo selectivamente.
+
+- Anunciado: 20 de marzo de 2026
+- IP ranges en `user-triggered-agents.json` (archivo separado, no en el estándar de fetchers)
+- Identificable en logs de servidor por el user-agent documentado
+- Experimenta con `web-bot-auth` (`https://agent.bot.goog`) para autenticación criptográfica
+- Las vistas generadas no cuentan como sesiones humanas en Analytics
 
 ---
 
@@ -439,6 +453,47 @@ Las plantillas usan slugs por defecto que pueden no coincidir con la configuraci
 **Procedimiento:** hacer WebFetch de cada URL transaccional del sitio real y confirmar
 que devuelve HTTP 200. Si devuelve 404, el slug real es otro — buscarlo antes de incluirlo.
 Si tanto el slug en inglés como el localizado devuelven 200, incluir ambos.
+
+---
+
+## Diagnostic commands — robots.txt y crawlability
+
+### Verificar headers HTTP y seguridad
+
+```bash
+# Status, redirects y headers relevantes
+curl -sI https://example.com/ | grep -E "(HTTP/|Location|X-Frame-Options|Content-Security-Policy|X-Robots-Tag|X-Pingback)"
+
+# Solo status code
+curl -s -I https://example.com/url-a-verificar | head -1
+```
+
+### Verificar renderizado para bots de IA
+
+Comprobar si el contenido es visible en el HTML crudo (sin JS). Crítico en sitios Divi, Elementor con lazyload agresivo, o temas de página JS-first.
+
+```bash
+# Simula GPTBot y extrae párrafos del HTML crudo
+curl -A "GPTBot/1.2" -s https://example.com | grep -o "<p>[^<]*</p>" | head -20
+
+# Alternativa — cualquier user-agent de bot de búsqueda
+curl -A "Googlebot/2.1" -s https://example.com | grep -o "<h1>[^<]*</h1>"
+```
+
+Si el output está vacío, el contenido requiere JS para renderizarse — no es visible para bots que no ejecutan JS (GPTBot, Perplexity, muchos crawlers de IA).
+
+### Verificar mención de llms.txt en robots.txt
+
+```bash
+curl -s https://example.com/robots.txt | grep -i "llms"
+```
+
+### Verificar X-Robots-Tag en archivos no-HTML
+
+```bash
+# Verificar PDFs, imágenes u otros recursos
+curl -I https://example.com/documento.pdf | grep -i "x-robots-tag"
+```
 
 ---
 

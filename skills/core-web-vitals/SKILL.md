@@ -364,6 +364,39 @@ Careful: bypass CDN cache for logged-in users and cart/checkout pages.
 
 ---
 
+## Diagnostic commands — CWV live
+
+### PageSpeed Insights API — lab + field data por URL
+
+```bash
+curl "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https://example.com/&strategy=mobile&key=YOUR_API_KEY"
+```
+
+Parámetros clave:
+- `strategy`: `mobile` (default y más relevante para Google) o `desktop`
+- `key`: API key de Google Cloud Console (proyecto con PageSpeed Insights API habilitada)
+
+El response JSON incluye:
+- `lighthouseResult.categories.performance.score` — puntuación Lighthouse (lab)
+- `loadingExperience.metrics` — datos de campo CrUX si hay suficiente tráfico
+- `lighthouseResult.audits.largest-contentful-paint` — LCP medido en lab
+- `lighthouseResult.audits.cumulative-layout-shift` — CLS
+- `lighthouseResult.audits.experimental-interaction-to-next-paint` — INP
+
+Sin API key funciona pero con rate limit muy bajo (no usar en batch).
+
+### Comparar móvil vs desktop
+
+```bash
+# Móvil
+curl -s "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https://example.com/&strategy=mobile" | python3 -c "import sys,json; d=json.load(sys.stdin); print('LCP:', d['lighthouseResult']['audits']['largest-contentful-paint']['displayValue'])"
+
+# Desktop
+curl -s "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https://example.com/&strategy=desktop" | python3 -c "import sys,json; d=json.load(sys.stdin); print('LCP:', d['lighthouseResult']['audits']['largest-contentful-paint']['displayValue'])"
+```
+
+---
+
 ## Audit checklist
 
 ```
