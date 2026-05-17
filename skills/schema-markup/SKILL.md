@@ -398,6 +398,170 @@ as indicator of thin author profiles for E-E-A-T purposes.
 
 **Fix:** Remove Google+ URLs. Deduplicate. Verify all URLs return 200.
 
+### `HowToStep.url` = "Array,Array,Array..." (WP Recipe Maker serialization bug)
+
+A PHP array serialization bug in certain recipe plugins causes the `url` field
+of `HowToStep` objects to contain the literal string `"Array,Array,Array..."`.
+
+```json
+{
+  "@type": "HowToStep",
+  "text": "Mix the ingredients.",
+  "url": "Array,Array,Array,Array,Array"   ← invalid, causes validation error
+}
+```
+
+**Cause:** The plugin internally stores step URLs as a PHP array and casts it
+to string instead of encoding it as JSON. Results in an invalid URL field
+that fails validator.schema.org.
+
+**Fix (WordPress output buffer):** Remove the `url` field when its value contains "Array":
+```php
+foreach ( $json['recipeInstructions'] as &$step ) {
+    if ( isset( $step['url'] ) && strpos( (string) $step['url'], 'Array' ) !== false ) {
+        unset( $step['url'] );
+    }
+}
+```
+
+### `Recipe.description` contains full article content
+
+Some recipe plugins dump the entire `post_content` into `Recipe.description`
+instead of the post excerpt. Results in thousands of characters including
+section headers, FAQ text, history notes, and tips.
+
+**Impact:** validator.schema.org does not flag this, but Google's rich result
+parser may truncate or ignore an oversized description. It also pollutes
+AI extraction (ChatGPT, Perplexity) with non-description content.
+
+**Fix:** Extract the first clean paragraph:
+```php
+if ( isset( $json['description'] ) && strlen( $json['description'] ) > 500 ) {
+    $paragraphs = preg_split( '/\r?\n\r?\n+/', $json['description'] );
+    foreach ( $paragraphs as $p ) {
+        $p = trim( $p );
+        if ( strlen( $p ) > 50 ) {
+            $json['description'] = $p;
+            break;
+        }
+    }
+}
+```
+
+### `nutrition.calories` missing unit
+
+The schema.org spec requires `calories` to be a string with a unit, not a bare number.
+
+```json
+// Wrong
+"nutrition": { "calories": "300" }
+
+// Correct
+"nutrition": { "calories": "300 calories" }
+```
+
+validator.schema.org accepts both, but Google's structured data documentation
+specifies the unit must be included. Fix: append `" calories"` if the value
+contains no letters.
+
+### `Recipe` missing `datePublished` when `Article` block has it
+
+On WordPress sites using a recipe plugin alongside Rank Math or Yoast,
+the `Article` block has `datePublished` but the `Recipe` block does not.
+Both schemas are on the same page.
+
+**Fix (WordPress output buffer, cross-block):** Capture the date from the
+Article block and apply it to the Recipe block. Since Article always precedes
+Recipe in the DOM, use a `static` variable:
+```php
+static $article_date_published = null;
+static $article_date_modified  = null;
+
+if ( $json['@type'] === 'Article' ) {
+    if ( isset( $json['datePublished'] ) ) $article_date_published = $json['datePublished'];
+    if ( isset( $json['dateModified'] ) )  $article_date_modified  = $json['dateModified'];
+}
+if ( $json['@type'] === 'Recipe' ) {
+    if ( ! isset( $json['datePublished'] ) && $article_date_published ) {
+        $json['datePublished'] = $article_date_published;
+    }
+}
+```
+
+**Alternative (no Article block):** Extract from the OG meta tag in the buffer:
+```php
+if ( preg_match( '/<meta property="og:article:published_time" content="([^"]+)"/', $buffer, $m ) ) {
+    $json['datePublished'] = str_replace( ' ', 'T', $m[1] ) . '+00:00';
+}
+```
+Note: WordPress may output the date as `"2024-06-09 16:40:33"` (space, no T, no timezone)
+in the OG tag even while Yoast/Rank Math output ISO 8601 in JSON-LD.
+
+### `datePublished` format `+0000` (missing colon)
+
+Some plugins generate `"2024-01-15T10:00:00+0000"` instead of `"2024-01-15T10:00:00+00:00"`.
+Both are technically valid ISO 8601 but the colon form is required by RFC 3339
+which schema.org uses as its date standard.
+
+**Fix:**
+```php
+$json['datePublished'] = preg_replace( '/\+0{4}$/', '+00:00', $json['datePublished'] );
+```
+
+### Empty `[]` JSON-LD block
+
+Some plugins generate an empty JSON-LD block (`[]`) on certain page types.
+`json_decode('[]', true)` returns an empty PHP array — it passes `is_array()`
+and does not trigger a JSON error, so standard checks miss it.
+
+**Detection:** validator.schema.org reports "No values provided for @type".
+
+**Fix (output buffer):** Add `|| empty($json)` to the guard condition:
+```php
+$json = json_decode( $matches[1], true );
+if ( json_last_error() !== JSON_ERROR_NONE || ! is_array( $json ) || empty( $json ) ) {
+    return $matches[0]; // return original unchanged
+}
+```
+
+### `@type` lowercase in `Organization` (not just Person/Article)
+
+Beyond the documented Rank Math bug in author objects, some plugins generate
+lowercase `@type` for the top-level Organization or NewsMediaOrganization:
+```json
+{ "@type": "organization", "name": "..." }  ← invalid
+```
+**Fix:** Check and capitalize any top-level `@type` that should be `Organization`.
+
+### `@type: "Organization"` in `author` field
+
+Certain plugin configurations map the post author as an `Organization`
+instead of a `Person`:
+```json
+"author": { "@type": "Organization", "name": "Author Name" }  ← wrong
+```
+An author is a `Person`. Using `Organization` here fails validation and
+breaks E-E-A-T authorship signals.
+
+### Character encoding corruption (`™` → replacement character)
+
+WordPress sites with a `utf8` (not `utf8mb4`) database connection may store
+multi-byte characters (™, ©, emoji) correctly in the DB but corrupt them
+during JSON encoding, producing the Unicode replacement character `�`.
+
+```json
+"name": "Brand�"   ← should be "Brand™"
+```
+
+**Fix (output buffer):**
+```php
+array_walk_recursive( $json, function( &$val ) {
+    if ( is_string( $val ) ) $val = str_replace( "\u{FFFD}", '™', $val );
+});
+```
+For a permanent fix, set `define('DB_CHARSET', 'utf8mb4')` in `wp-config.php`
+and convert the database tables to `utf8mb4`.
+
 ### WebSite schema @id in subdirectory installations (Yoast)
 
 Yoast in a WordPress subdirectory (`/en/`) generates:
@@ -541,6 +705,69 @@ Rank Math generates similar schema to Yoast with some differences:
 **Rich Snippet type per post:** Each post can have a different schema type
 set via the Rank Math sidebar > Schema > Schema Type.
 
+### WordPress — output buffer fix pattern
+
+When a plugin generates schema bugs that cannot be fixed through plugin settings
+(wrong `@type` capitalization, serialization bugs, missing fields), the cleanest
+approach is intercepting the page output buffer and patching the JSON-LD blocks
+before they are sent to the browser.
+
+This avoids modifying the plugin, survives plugin updates, and fixes all pages
+simultaneously.
+
+**Pattern (add to `functions.php` or a code snippets plugin):**
+```php
+add_action( 'template_redirect', function() {
+    ob_start( function( $buffer ) {
+        return preg_replace_callback(
+            '/<script type="application\/ld\+json">(.*?)<\/script>/s',
+            function( $matches ) use ( $buffer ) {
+                $json = json_decode( $matches[1], true );
+                if ( json_last_error() !== JSON_ERROR_NONE || ! is_array( $json ) || empty( $json ) ) {
+                    return $matches[0];
+                }
+
+                // Apply fixes here — examples:
+
+                // Fix lowercase @type
+                if ( isset( $json['@type'] ) && $json['@type'] === 'article' ) {
+                    $json['@type'] = 'Article';
+                }
+
+                // Fix author @type
+                if ( isset( $json['author']['@type'] ) && $json['author']['@type'] === 'person' ) {
+                    $json['author']['@type'] = 'Person';
+                }
+
+                // Remove HowToStep Array bug
+                if ( isset( $json['recipeInstructions'] ) ) {
+                    foreach ( $json['recipeInstructions'] as &$step ) {
+                        if ( isset( $step['url'] ) && strpos( (string) $step['url'], 'Array' ) !== false ) {
+                            unset( $step['url'] );
+                        }
+                    }
+                    unset( $step );
+                }
+
+                return '<script type="application/ld+json">'
+                    . wp_json_encode( $json, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES )
+                    . '</script>';
+            },
+            $buffer
+        );
+    });
+}, 1 );
+```
+
+**When to use this pattern:**
+- Bugs reproducible via `curl` that do not appear in plugin settings
+- Sites where the plugin cannot be updated (managed hosting, frozen versions)
+- Multiple bugs requiring coordinated fixes across the same JSON-LD blocks
+
+**When NOT to use it:**
+- If the fix is available in plugin settings — prefer that (no maintenance burden)
+- If the site uses a page cache that caches before WordPress runs (Varnish, Cloudflare cache with HTML caching) — the fix will not apply to cached pages
+
 ### WooCommerce
 
 WooCommerce + Yoast WooCommerce SEO add-on generates:
@@ -631,4 +858,59 @@ LOW
 [ ] No schema types Google does not use (redundant noise)
 [ ] sameAs includes LinkedIn for author profiles (E-E-A-T)
 [ ] GSC Enhancements monitored for eligible schema types
+[ ] Recipe description is clean (not full article content >500 chars)
+[ ] HowToStep.url is a valid URL (not "Array,Array,...")
+[ ] nutrition.calories includes unit ("300 calories" not "300")
+[ ] Recipe datePublished present
+[ ] No empty [] JSON-LD blocks on any page type
+```
+
+---
+
+## Diagnostic commands — schema extraction
+
+**Primary method — curl + python (works on any site):**
+
+WebFetch and DataForSEO on_page do not return raw JSON-LD blocks reliably.
+Use curl to fetch the HTML and extract all `<script type="application/ld+json">` blocks:
+
+```bash
+curl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" "https://example.com/page/" \
+| python3 -c "
+import sys, re, json
+html = sys.stdin.read()
+blocks = re.findall(r'<script type=\"application/ld\+json\">(.*?)</script>', html, re.DOTALL)
+print(f'{len(blocks)} blocks found')
+for i, b in enumerate(blocks):
+    try:
+        print(f'--- Block {i+1}: @type={json.loads(b).get(\"@type\",\"@graph\")} ---')
+        print(json.dumps(json.loads(b), indent=2, ensure_ascii=False))
+    except Exception as e:
+        print(f'Block {i+1} PARSE ERROR: {e}')
+        print(repr(b[:200]))
+"
+```
+
+**If Cloudflare blocks the request**, add a Referer header:
+```bash
+curl -s -A "Mozilla/5.0 ..." -H "Referer: https://example.com/" "https://example.com/page/"
+```
+
+**Quick field audit across multiple pages:**
+```bash
+for url in \
+  "https://example.com/" \
+  "https://example.com/recipe-page/" \
+  "https://example.com/about/"; do
+  echo "=== $url ==="
+  curl -s -A "Mozilla/5.0" "$url" | python3 -c "
+import sys, re, json
+blocks = re.findall(r'<script type=\"application/ld\+json\">(.*?)</script>', sys.stdin.read(), re.DOTALL)
+for b in blocks:
+    try:
+        j = json.loads(b)
+        print(f'  {j.get(\"@type\",\"@graph\")}: datePublished={j.get(\"datePublished\",\"–\")} author.@type={j.get(\"author\",{}).get(\"@type\",\"–\")}')
+    except: pass
+"
+done
 ```
