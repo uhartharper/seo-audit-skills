@@ -259,6 +259,38 @@ http://www.dominio.com/ruta/ → https://www.dominio.com/ruta/ → https://domin
 
 Verificar que las reglas de www y HTTPS se consolidan en un solo redirect.
 
+### Cloudflare + servidor — patrón de cadena frecuente
+
+Cuando el sitio usa Cloudflare, es habitual que la cadena se genere entre dos capas:
+
+1. **Cloudflare "Always Use HTTPS"** — redirige `http://` a `https://` sin tocar el subdominio
+2. **Servidor/WordPress** — redirige www → non-www (o viceversa)
+
+Resultado para tráfico `http://www`:
+```
+http://www.dominio.com → https://www.dominio.com → https://dominio.com  (2 saltos)
+```
+
+**Fix: Cloudflare Redirect Rule que intercepta en el edge antes del servidor**
+
+En Cloudflare → Rules → Redirect Rules → Create rule:
+
+- **If incoming requests match:** Custom filter expression
+- **Expression:** `(http.host eq "www.dominio.com")`
+- **Then:** URL redirect
+- **Type:** Dynamic
+- **URL:** `concat("https://dominio.com", http.request.uri.path)`
+- **Status:** 301
+- **Preserve query string:** On
+
+La rule intercepta cualquier petición www (http o https) y redirige directo al canonical en un salto, antes de que llegue al servidor.
+
+**Sintaxis crítica en Cloudflare Redirect Rules:**
+- Type **Static** → URL literal, sin interpolación. Escribir `${http.request.uri.path}` lo toma como texto.
+- Type **Dynamic** → URL es una expresión. Usar `concat("https://dominio.com", http.request.uri.path)`.
+
+**Riesgo de loop:** si el servidor tiene un redirect en dirección opuesta (non-www → www) y Cloudflare tiene www → non-www, se produce un loop. Antes de activar la rule, verificar la dirección del redirect de servidor con `curl -sI https://dominio.com/` y `curl -sI https://www.dominio.com/`.
+
 ### Soft 404 vs redirect
 
 Una URL que devuelve 200 con contenido de "página no encontrada" es un soft 404.

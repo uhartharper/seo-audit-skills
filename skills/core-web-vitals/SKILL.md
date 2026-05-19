@@ -252,6 +252,47 @@ Event handlers that trigger synchronous layout reads (`getBoundingClientRect`,
 
 ---
 
+## Cloudflare Rocket Loader — conflicto con LiteSpeed Cache
+
+Rocket Loader es una feature de Cloudflare que difiere todo el JavaScript para reducir TBT.
+En la práctica, en sitios que ya usan LiteSpeed Cache (o WP Rocket) con defer de JS activo,
+Rocket Loader genera el efecto contrario: él mismo se convierte en un script bloqueador cargado
+antes que todo lo demás.
+
+**Síntoma:** TBT alto (>200ms) con Lighthouse mostrando `rocket-loader.min.js` como recurso
+bloqueante en la ruta crítica y como dependency en el árbol de red.
+
+**Fix:** Cloudflare → Speed → Optimization → Rocket Loader → **Off**.
+
+**Regla:** nunca usar Rocket Loader + LiteSpeed Cache JS defer simultáneamente. Son redundantes
+y en conflicto. LiteSpeed Cache tiene precedencia — hace el trabajo mejor al conocer el contexto
+WordPress y poder excluir scripts específicos.
+
+---
+
+## LiteSpeed Cache — lazy load y exclusión de imagen LCP
+
+LiteSpeed Cache aplica lazy load a todas las imágenes por defecto, incluyendo la imagen LCP.
+El resultado es un resource load delay de varios segundos en el LCP incluso con `fetchpriority="high"`.
+
+**La exclusión NO está en la pestaña Media, sino en la pestaña Excludes:**
+
+LiteSpeed Cache → Page Optimization → **Excludes** → "Exclusión de nombres de clases para carga diferida de imágenes"
+
+Añadir:
+```
+wp-post-image
+```
+
+`wp-post-image` es la clase que WordPress asigna a la imagen destacada (featured image), que
+típicamente es el elemento LCP en posts y páginas.
+
+**Verificación:** tras guardar, comprobar en el HTML que la imagen LCP tiene `src` con la URL
+real (no un placeholder base64) y que Lighthouse confirma "no se aplicó la carga diferida" en
+la sección "Descubrimiento de solicitudes de LCP".
+
+---
+
 ## TTFB — Time to First Byte
 
 TTFB is not a Core Web Vital but it is the foundation. LCP cannot be ≤ 2.5s

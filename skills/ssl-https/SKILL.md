@@ -199,6 +199,29 @@ Requirements: 1-year max-age, includeSubDomains, preload directive, HTTPS-only s
 **Warning:** HSTS with `includeSubDomains` breaks any subdomain that does not
 have a valid SSL certificate. Verify all subdomains are on HTTPS before enabling.
 
+### Configurar HSTS en Cloudflare
+
+Cloudflare → SSL/TLS → Edge Certificates → scroll hasta **HTTP Strict Transport Security (HSTS)** → Enable HSTS.
+
+Configuración recomendada para primera activación:
+
+| Campo | Valor recomendado |
+|-------|------------------|
+| Enable HSTS | On |
+| Max Age | 6 months (15,552,000s) — empezar aquí, no con 1 año |
+| Include Subdomains | Off — solo activar si todos los subdominios tienen HTTPS válido |
+| Preload | Off — irreversible, requiere cumplir requisitos estrictos antes |
+| No-Sniff Header | On |
+
+**Por qué 6 meses y no 1 año:** si se desactiva HTTPS o se desconecta Cloudflare mientras
+HSTS está activo, el sitio queda inaccesible para los navegadores que lo tienen cacheado
+durante todo el max-age. 6 meses reduce el riesgo de bloqueo prolongado ante un error.
+
+**Resultado esperado en headers:**
+```
+Strict-Transport-Security: max-age=15552000
+```
+
 ---
 
 ## Security headers
