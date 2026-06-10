@@ -1,6 +1,6 @@
 # SEO Skills for Claude Code
 
-A knowledge base of 20 skills for technical SEO audits with Claude Code.
+A knowledge base of 21 skills for technical SEO audits with Claude Code.
 Each skill encodes real-world patterns: documented CMS bugs, fix-ready code
 snippets, audit checklists, and edge cases that generic AI training data misses.
 
@@ -12,6 +12,7 @@ SEOs actually use.
 - **Analytics & tracking**: GA4, Google Tag Manager
 - **SEO tools**: Screaming Frog, SE Ranking, Semrush
 - **Technical**: robots.txt (+ indexability), sitemap, canonical tags, redirects, on-page fundamentals, Core Web Vitals, cache, images, SSL/HTTPS, schema markup, hreflang, third-party scripts
+- **AI/GEO**: GEO (Generative Engine Optimization), AI crawler access, llms.txt, Wikidata entity, brand citation signals
 
 All knowledge is anonymized and GDPR compliant — no client data, no domains,
 no identifying information. The pattern matters, not the source.
@@ -284,12 +285,31 @@ Hreflang implementation and auditing for multilingual or multi-regional WordPres
 JSON-LD structured data implementation, validation, and E-E-A-T signals.
 
 - **Type selection** — by page type: Organization/LocalBusiness, Article, FAQPage, BreadcrumbList, Product+Offer, MedicalWebPage, AggregateRating
-- **Documented bugs** — Rank Math `datePublished=1970-01-01`, Rank Math lowercase `@type`, logo < 112×112px, `specialty` with text instead of enum URL, `sameAs` with dead URLs (Google+), duplicate `@id` in subdirectory Yoast installations
+- **Documented bugs** — Rank Math `datePublished=1970-01-01`, Rank Math lowercase `@type`, logo < 112×112px, `relevantSpecialty`/`specialty` with text or wrong enum URL (`PhysicalTherapy` is a business @type, not a MedicalSpecialty value — correct: `Physiotherapy`), `sameAs` with dead URLs (Google+), duplicate `@id` in subdirectory Yoast installations
 - **FAQPage** — rich results restricted to gov/health since 2023, but still valuable for semantic understanding, Bing, and AI extraction (ChatGPT, Perplexity, AI Overviews)
-- **E-E-A-T** — author schema with `jobTitle`, `description`, consistent `@id` across Article and Person pages, `sameAs` for LinkedIn/ORCID
-- **CMS implementation** — Yoast (auto-generated types, logo path, social `sameAs`), Rank Math (schema builder, known bugs), WooCommerce (Product schema with/without add-on), PrestaShop (native Product schema, AggregateRating module)
+- **E-E-A-T** — author schema with `jobTitle`, `description`, consistent `@id` across Article and Person pages; embedded Person schema (no `@id`) when author archive page does not yet exist
+- **CMS implementation** — Yoast, Rank Math, WooCommerce, PrestaShop; output buffer fix pattern deployable via functions.php, Code Snippets plugin, HFCM, or must-use plugin
 - **Validation workflow** — validator.schema.org vs Rich Results Test vs GSC Enhancements (different tools, different purposes)
 - **MedicalWebPage** — does not generate GSC enhancement report; value is semantic, E-E-A-T, and AI extraction
+- Audit checklist by criticality
+
+---
+
+### AI / GEO — Generative Engine Optimization
+
+**File:** `skills/geo-ai-discoverability/SKILL.md`
+
+Optimize for citation by AI assistants (Google AI Overviews, ChatGPT, Perplexity, Bing Copilot).
+
+- **AI crawler access** — robots.txt rules for GPTBot, OAI-SearchBot, PerplexityBot, Google-Extended, Anthropic-AI; decision logic for training vs citation access
+- **llms.txt** — file structure, implementation for WordPress and static sites, linking from robots.txt
+- **Wikidata entity** — minimum viable entity for brand/publication authority, required statements, linking to Organization schema via `sameAs`
+- **NewsMediaOrganization schema** — `publishingPrinciples`, `masthead`, `description`, ISSN for publications
+- **Passage-level citability** — answer-first structure, named statistics format, anti-patterns that reduce AI extraction
+- **E-E-A-T for AI** — author `jobTitle` + `description` as primary authority signals, about/masthead requirements
+- **Platform-specific** — Google AI Overviews (organic ranking matters), Perplexity (authorship + dates), ChatGPT/SearchGPT (Bing index + OAI-SearchBot), Bing Copilot (FAQ schema weighted)
+- **Wikipedia** — notability threshold, approach, Wikidata link
+- **Citation monitoring** — manual spot-check method, DataForSEO LLM mentions API
 - Audit checklist by criticality
 
 ---

@@ -346,19 +346,33 @@ Correct: `"@type": "Person"` — capitalized, matching schema.org specification.
 
 **Detection:** validator.schema.org flags this as a type error.
 
-### `specialty` with text value instead of enum URL (MedicalWebPage)
+### `specialty` / `relevantSpecialty` with text value or wrong enum URL
+
+**Field names differ by context:**
+- `relevantSpecialty` — on `MedicalWebPage` (the page covers this specialty)
+- `specialty` — on `MedicalBusiness` (the business specializes in this)
+
+Both require a full enum URL from the schema.org MedicalSpecialty enum.
 
 ```json
 // Wrong — text value
-"specialty": "Physical Therapy"
+"relevantSpecialty": "Physical Therapy"
 
-// Correct — full enum URL
-"specialty": "http://schema.org/PhysicalTherapy"
+// Wrong — PhysicalTherapy is a schema.org @type for businesses, NOT a MedicalSpecialty enum value
+"relevantSpecialty": "http://schema.org/PhysicalTherapy"
+
+// Correct — Physiotherapy is the valid MedicalSpecialty enum value
+"relevantSpecialty": "http://schema.org/Physiotherapy"
 ```
 
-The `specialty` property on `MedicalWebPage` and `MedicalBusiness` requires
-a full enum URL from the schema.org MedicalSpecialty enum.
-Text values are invalid per validator.schema.org.
+`http://schema.org/PhysicalTherapy` is a subtype of `LocalBusiness/MedicalBusiness`
+(i.e. a business type), not a value in the MedicalSpecialty enumeration. Using it as a
+`specialty` or `relevantSpecialty` value fails validator.schema.org.
+
+Other valid MedicalSpecialty enum values for health clinics:
+`http://schema.org/Physiotherapy`, `http://schema.org/Osteopathy`,
+`http://schema.org/Nursing`, `http://schema.org/Musculoskeletal`,
+`http://schema.org/Neurologic`
 
 Full list: https://schema.org/MedicalSpecialty
 
@@ -668,6 +682,31 @@ standalone Person schema on the author's archive page:
 Google uses the `@id` to connect the author entity across pages and build
 a consolidated understanding of the author's expertise.
 
+### Person schema when no author archive page exists
+
+When a WordPress author user exists but the public author archive page hasn't been
+created yet (or returns 404), using a `@id` with a non-existent URL is worse than
+omitting it — it creates a broken entity reference.
+
+```json
+// Pattern: embed full Person inline in Article, without @id or url
+"author": {
+  "@type": "Person",
+  "name": "Author Full Name",
+  "jobTitle": "Physiotherapist",
+  "description": "Short bio establishing expertise — 1-2 sentences",
+  "sameAs": [
+    "https://www.linkedin.com/in/authorname"
+  ]
+}
+```
+
+**Rules:**
+- Omit `@id` and `url` if the author archive page does not exist or returns 404
+- `jobTitle` and `description` are still read by Google for E-E-A-T
+- `sameAs` with LinkedIn remains valid without a `@id`
+- Add `@id` and `url` fields once the author page is live and returns 200
+
 ---
 
 ## CMS implementation
@@ -767,6 +806,19 @@ add_action( 'template_redirect', function() {
 **When NOT to use it:**
 - If the fix is available in plugin settings — prefer that (no maintenance burden)
 - If the site uses a page cache that caches before WordPress runs (Varnish, Cloudflare cache with HTML caching) — the fix will not apply to cached pages
+
+**Deployment options:**
+
+| Method | When to use |
+|--------|-------------|
+| `functions.php` | Child theme present and actively maintained |
+| **Code Snippets** plugin | No child theme; snippets survive theme updates; toggle per snippet in WP admin |
+| **HFCM** (Header Footer Code Manager) | Need to scope the fix to specific post types or page templates |
+| Must-use plugin (`mu-plugins/`) | Site-critical fixes that must run before regular plugins load |
+
+Code Snippets is the recommended method for most sites: no file access required,
+managed from WP admin, and survives theme changes. The `template_redirect` hook
+works identically regardless of which deployment method is used.
 
 ### WooCommerce
 
