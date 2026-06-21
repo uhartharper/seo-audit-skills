@@ -2,11 +2,11 @@
 name: geo-ai-discoverability
 description: >
   GEO (Generative Engine Optimization): optimize content and site signals so that
-  AI tools (Google AI Overviews, ChatGPT, Perplexity, Bing Copilot) cite, reference,
-  and surface the site. Covers llms.txt, AI crawler access, Wikidata entity hygiene,
-  passage-level citability, brand mention signals, and platform-specific patterns.
-  Use when auditing AI visibility, implementing llms.txt, or analyzing why a site
-  is not cited by AI assistants.
+  AI tools (Google AI Overviews, Google AI Mode, ChatGPT, Perplexity, Bing Copilot)
+  cite, reference, and surface the site. Covers llms.txt, AI crawler access, Wikidata
+  entity hygiene, passage-level citability, brand mention signals, and platform-specific
+  patterns including AI Mode vs AI Overviews distinction. Use when auditing AI visibility,
+  implementing llms.txt, or analyzing why a site is not cited by AI assistants.
 ---
 
 # GEO — Generative Engine Optimization
@@ -339,6 +339,29 @@ attempt can make future creation harder.
 - Structured data: FAQPage, HowTo, Article with `datePublished` increase passage extraction
 - Answer-first content structure is the primary lever
 - No direct submission mechanism — improve organic ranking and content structure
+
+### Google AI Mode
+
+AI Mode is a separate Google surface from AI Overviews, launched in 2025. They share
+approximately 13.7% citation overlap — optimizing for one does not automatically
+improve the other.
+
+Key differences vs AI Overviews:
+
+| Factor | AI Overviews | AI Mode |
+|--------|-------------|---------|
+| Trigger | Appended to standard SERP | Dedicated mode (separate tab) |
+| Content signal | Topical authority, backlinks | Freshness weighted more heavily |
+| Entity signal | Domain authority | Entity authority (Wikidata, sameAs) |
+| Citation style | Inline with SERP | Multi-turn, conversational citations |
+| Optimization lever | Organic ranking + passage density | Freshness + entity hygiene |
+
+**Optimization for AI Mode:**
+- Update content dates visibly and in schema `dateModified`
+- Strengthen entity signals: Wikidata Q-number, sameAs with authoritative sources
+- Prioritize recency on topics where AI Mode is likely triggered (news, comparisons,
+  product research, "best X" queries)
+- Monitor separately from AI Overviews — a page cited in one may not appear in the other
 
 ### Perplexity
 

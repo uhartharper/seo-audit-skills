@@ -184,6 +184,25 @@ con el historial de updates de Google antes de concluir una causa.
 
 ## Integración GA4 + Google Search Console
 
+### Calidad de datos GSC — períodos afectados (2025-2026)
+
+Antes de interpretar cualquier dato de GSC, verificar el período:
+
+| Período | Issue | Métrica afectada |
+|---------|-------|-----------------|
+| Mayo 2025 – abril 2026 | Error de registro de Google: impresiones infladas 30-50% | Impresiones |
+| Antes de sep. 2025 (adicional) | Herramientas SEO con parámetro `&num=100` generaban impresiones falsas para posiciones >10. Eliminado 10-14 sep. 2025 → caída brusca de impresiones 20-50% | Impresiones |
+| Desde junio 2025 | Datos de AI Mode mezclados con orgánico en tipo "Web". Sin filtro nativo en GSC | Impresiones + clics |
+| Después de abril 2026 | Datos limpios. Mejor período para análisis de impresiones | — |
+
+**Regla operativa:** En períodos afectados, priorizar clics sobre impresiones.
+Las impresiones solo son útiles como referencia relativa entre queries, no como valor absoluto.
+Los clics no están afectados por ninguno de estos issues.
+
+**Caída brusca de impresiones en septiembre 2025:** si el sitio muestra una caída de
+impresiones del 20-50% entre el 10 y el 14 de septiembre de 2025, es el efecto de la
+eliminación del `&num=100`. No es una penalización de Google ni un problema del sitio.
+
 ### Requisitos
 
 GA4 Admin > Property Settings > Search Console linking.

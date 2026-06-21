@@ -177,19 +177,22 @@ will generate a rich result. Both tools serve different purposes.
 }
 ```
 
-**FAQPage and rich results (2023 update):**
-Google restricted FAQ rich results (accordion dropdowns in SERP) to
-government and health/medical sites only. Commercial sites no longer
-get the accordion rich result.
+**FAQPage and rich results (May 7, 2026 update):**
+Google retired FAQ rich results completely on May 7, 2026. FAQPage schema
+no longer generates accordion dropdowns in Google Search for any site type
+(including government and health sites, which had been the last exceptions
+since the 2023 partial restriction).
 
 **However, FAQPage is still worth implementing because:**
-- Google reads Q&A pairs for semantic understanding of the page
-- Bing and Yandex still render FAQ rich results for all sites
-- AI tools (ChatGPT, Perplexity, AI Overviews) extract Q&A pairs from FAQPage schema
-- E-E-A-T signal: structured, clear answers support topical authority
+- Bing and Yahoo still render FAQ rich results for all sites
+- AI tools (ChatGPT, Perplexity, AI Overviews, AI Mode) extract Q&A pairs
+  from FAQPage for citation and answer generation
+- Google reads Q&A pairs for semantic understanding and topical authority
+- E-E-A-T signal: structured, clear answers support content quality signals
 
-**Recommendation:** Maintain existing FAQPage implementations. Do not remove them.
-Do not promise FAQ accordion rich results to clients on commercial sites.
+**Recommendation:** Maintain and add FAQPage implementations. Do not remove them.
+Do not promise FAQ rich results in Google Search — they no longer exist.
+Never report FAQPage as a schema issue or error.
 
 ### BreadcrumbList
 
