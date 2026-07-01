@@ -165,6 +165,38 @@ LiteSpeed Cache automatically purges page cache when a post is published or upda
 Verify this is working: publish a post and check the response headers for the page —
 `X-LiteSpeed-Cache: miss` confirms a fresh request was served.
 
+**Separate mobile cache — WP Customizer CSS stripped:**
+LiteSpeed Cache can maintain separate cached versions for desktop and mobile (detected
+by User-Agent). When CSS is added via WP Customizer (Additional CSS), LiteSpeed's CSS
+optimization strips the `<style id="wp-custom-css">` block when building the mobile
+cache. Result: CSS works for logged-in admins (who bypass cache) and in DevTools mobile
+simulation (which uses the desktop cache), but not on real mobile devices.
+
+Diagnosis:
+```bash
+# Fetch with mobile UA and check for wp-custom-css block
+curl -s -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1" \
+  https://domain.com/page/ | grep -i "wp-custom-css\|font-size"
+# If wp-custom-css is absent from the HTML, LiteSpeed is stripping it
+```
+
+Fix — use Code Snippets plugin (scope `site-css`) instead of WP Customizer:
+Code Snippets generates a dedicated external stylesheet (`?code-snippets-css=1`) that
+LiteSpeed includes correctly in the HTML for all devices. The WP Customizer inline
+`<style>` block is unreliable with LiteSpeed CSS optimization enabled.
+
+```bash
+# Create CSS snippet via Code Snippets REST API
+curl -X POST https://domain.com/wp-json/code-snippets/v1/snippets \
+  -H "Authorization: Basic <base64(user:app-password)>" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"my-css","code":".selector { property: value !important; }","scope":"site-css","active":true}'
+# Then purge LiteSpeed cache manually from WP Admin
+```
+
+Note: WP Admin may be blocked by Cloudflare for scripted requests. In that case the
+cache purge must be triggered manually from the WordPress dashboard.
+
 ### Redis object cache
 
 Object cache stores database query results in memory. Eliminates repeated identical
